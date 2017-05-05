@@ -21,7 +21,7 @@ import java.util.HashMap;
 
 public class Requester {
 
-    public void request(Context context, Requestable requestable, Response.Listener<String> listener){
+    public static void request(Context context, Requestable requestable, Response.Listener<String> listener){
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
 
