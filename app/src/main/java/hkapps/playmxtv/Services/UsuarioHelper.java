@@ -64,7 +64,7 @@ public class UsuarioHelper extends Helper {
 
             @Override
             public int getMethod() {
-                return Request.Method.POST;
+                return Request.Method.GET;
             }
 
             @Override
@@ -74,10 +74,9 @@ public class UsuarioHelper extends Helper {
         };
     }
 
-    protected Usuario getUsuario(String response) throws XmlPullParserException, IOException{
+    public Usuario getUsuario(String response) throws XmlPullParserException, IOException{
         //We set the response xml string
         setString(response);
-
 
         String CURRENT_TAG="";
         String CURRENT_TEXT="";

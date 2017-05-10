@@ -13,7 +13,7 @@ import hkapps.playmxtv.Model.FichaResumida;
  * Created by hkfuertes on 24/04/2017.
  */
 
-public class FichaResumidaHelper {
+public class FichaResumidaHelper extends Helper {
     private final String FICHA_TAG = "Ficha";
 
     private final String TITLE_TAG = "Title";
@@ -25,17 +25,20 @@ public class FichaResumidaHelper {
     private final String CAPITULO_TAG = "Capitulo";
     private final String ID_CAPITULO_TAG = "IdCapitulo";
 
-    protected FichaResumida generateEntity(XmlPullParser xpp) throws XmlPullParserException, IOException {
+    public FichaResumida getFichaResumida(String response) throws XmlPullParserException, IOException {
+        //We set the response xml string
+        setString(response);
+
         String CURRENT_TAG="";
         String CURRENT_TEXT="";
         String title = null, poster=null, id=null, rating=null, your_rating = null;
         String capitulo = null, id_capitulo=null;
-        int eventType = xpp.getEventType();
+        int eventType = parser.getEventType();
         while (eventType != XmlPullParser.END_DOCUMENT) {
             if(eventType == XmlPullParser.START_TAG) {
-                CURRENT_TAG = xpp.getName();
+                CURRENT_TAG = parser.getName();
             } else if(eventType == XmlPullParser.END_TAG) {
-                if(xpp.getName().equals(CURRENT_TAG)){
+                if(parser.getName().equals(CURRENT_TAG)){
                     switch (CURRENT_TAG){
                         case TITLE_TAG:
                             title = CURRENT_TEXT;
@@ -61,9 +64,9 @@ public class FichaResumidaHelper {
                     }
                 }
             } else if(eventType == XmlPullParser.TEXT) {
-                CURRENT_TEXT = xpp.getText();
+                CURRENT_TEXT = parser.getText();
             }
-            eventType = xpp.next();
+            eventType = parser.next();
         }
         if(id == null) throw new IOException("Missing id");
         return new FichaResumida( id,title, poster, rating, your_rating);
@@ -75,7 +78,7 @@ public class FichaResumidaHelper {
         List<FichaResumida> fichas = new ArrayList<FichaResumida>();
         for(String ficha_raw_item : ficha_raw){
             if(ficha_raw_item.contains(ID_TAG)){
-                FichaResumida current = generate(ficha_raw_item.split("</"+FICHA_TAG+">")[0]);
+                FichaResumida current = getFichaResumida(ficha_raw_item.split("</"+FICHA_TAG+">")[0]);
                 if(!fichas.contains(current)) fichas.add(current);
             }
         }
