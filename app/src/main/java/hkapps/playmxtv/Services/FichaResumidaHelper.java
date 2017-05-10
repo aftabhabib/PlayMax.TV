@@ -13,7 +13,7 @@ import hkapps.playmxtv.Model.FichaResumida;
  * Created by hkfuertes on 24/04/2017.
  */
 
-public class FichaResumidaHelper extends Helper<FichaResumida> {
+public class FichaResumidaHelper {
     private final String FICHA_TAG = "Ficha";
 
     private final String TITLE_TAG = "Title";
@@ -25,7 +25,6 @@ public class FichaResumidaHelper extends Helper<FichaResumida> {
     private final String CAPITULO_TAG = "Capitulo";
     private final String ID_CAPITULO_TAG = "IdCapitulo";
 
-    @Override
     protected FichaResumida generateEntity(XmlPullParser xpp) throws XmlPullParserException, IOException {
         String CURRENT_TAG="";
         String CURRENT_TEXT="";

@@ -54,7 +54,7 @@ import hkapps.playmxtv.DetailsDescriptionPresenter;
 import hkapps.playmxtv.Model.Movie;
 import hkapps.playmxtv.Model.MovieList;
 import hkapps.playmxtv.R;
-import hkapps.playmxtv.Utils;
+import hkapps.playmxtv.Static.Utils;
 
 /*
  * LeanbackDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.

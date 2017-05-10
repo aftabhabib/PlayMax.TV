@@ -12,7 +12,7 @@
  * the License.
  */
 
-package hkapps.playmxtv;
+package hkapps.playmxtv.Static;
 
 import android.content.Context;
 import android.graphics.Point;

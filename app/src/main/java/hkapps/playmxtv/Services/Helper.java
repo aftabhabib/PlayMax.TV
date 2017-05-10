@@ -25,21 +25,18 @@ import java.util.List;
  * Created by hkfuertes on 24/04/2017.
  */
 
-public abstract class Helper<T> {
+public abstract class Helper {
 
     XmlPullParser parser = Xml.newPullParser();
     protected String ns = null;
 
     public Helper(){};
 
-    public T generate(String response) throws XmlPullParserException, IOException {
+    public void setString(String response) throws XmlPullParserException, IOException {
         try {
             parser.setInput( new StringReader( response ) );
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         }
-        return generateEntity( parser);
     }
-
-    protected abstract T generateEntity(XmlPullParser parser) throws XmlPullParserException, IOException;
 }
