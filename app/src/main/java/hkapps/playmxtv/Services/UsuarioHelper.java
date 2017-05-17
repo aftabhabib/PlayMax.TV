@@ -8,6 +8,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.Static.Constants;
@@ -21,6 +23,9 @@ public class UsuarioHelper extends Helper {
     private final String ID_TAG = "Id";
     private final String NAME_TAG = "Name";
     private final String AVATAR_TAG = "Avatar";
+
+    private final String ERROR_TAG = "Error";
+    private final String ERROR_MESSAGE_TAG = "MessageError";
 
     /*
     <Data>
@@ -46,11 +51,13 @@ public class UsuarioHelper extends Helper {
             }
 
             @Override
-            public JSONObject getBody() throws JSONException {
-                JSONObject jsonBody = new JSONObject();
-                jsonBody.put("username", username);
-                jsonBody.put("password", password);
-                return jsonBody;
+            public Map<String, String> getBody() {
+
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("username", username);
+                params.put("password", password);
+
+                return params;
             }
         };
     }
@@ -68,7 +75,7 @@ public class UsuarioHelper extends Helper {
             }
 
             @Override
-            public JSONObject getBody() throws JSONException {
+            public Map<String,String> getBody() {
                 return null;
             }
         };
@@ -81,6 +88,7 @@ public class UsuarioHelper extends Helper {
         String CURRENT_TAG="";
         String CURRENT_TEXT="";
         String sid = null, id=null, name=null, avatar=null;
+        String messageError=null;
         int eventType = parser.getEventType();
         while (eventType != XmlPullParser.END_DOCUMENT) {
             if(eventType == XmlPullParser.START_TAG) {
@@ -100,6 +108,9 @@ public class UsuarioHelper extends Helper {
                         case NAME_TAG:
                             name = CURRENT_TEXT;
                             break;
+                        case ERROR_MESSAGE_TAG:
+                            messageError = CURRENT_TEXT;
+                            break;
                     }
                 }
             } else if(eventType == XmlPullParser.TEXT) {
@@ -107,6 +118,7 @@ public class UsuarioHelper extends Helper {
             }
             eventType = parser.next();
         }
+        if(messageError != null) throw new IOException(messageError);
         if(sid == null) throw new IOException("Missing Sid");
         return new Usuario(id,name,sid,avatar);
     }

@@ -1,10 +1,12 @@
 package hkapps.playmxtv.Model;
 
+import java.io.Serializable;
+
 /**
  * Created by hkfuertes on 22/04/2017.
  */
 
-public class Usuario {
+public class Usuario implements Serializable {
     private String Name;
     private String Sid;
     private String Avatar;

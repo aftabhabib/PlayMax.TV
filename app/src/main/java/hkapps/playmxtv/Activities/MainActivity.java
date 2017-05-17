@@ -15,6 +15,7 @@
 package hkapps.playmxtv.Activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -45,28 +46,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent me = getIntent();
+        Usuario user = (Usuario) me.getSerializableExtra("user");
 
-        FichaResumidaHelper frhelper = new FichaResumidaHelper();
-        final UsuarioHelper uhelper = new UsuarioHelper();
-
-        try {
-            Requester.request(this,uhelper.getRequestForLogin("hkfuertes","gorilafeliz"),new Response.Listener<String>(){
-
-                @Override
-                public void onResponse(String response) {
-                    try {
-                        Usuario user = uhelper.getUsuario(response);
-                        Log.d("REQ",user.toString());
-                    } catch (XmlPullParserException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-
+        Log.d("REQ", user.toString());
     }
 }
