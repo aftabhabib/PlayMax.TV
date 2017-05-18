@@ -29,7 +29,7 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         try {
-            Requester.request(this,uhelper.getRequestForLogin("hkfuertes","Gorila6030"),new Response.Listener<String>(){
+            Requester.request(this,uhelper.getRequestForLogin("username","password"),new Response.Listener<String>(){
 
                 @Override
                 public void onResponse(String response) {
