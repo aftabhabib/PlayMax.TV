@@ -15,23 +15,9 @@
 package hkapps.playmxtv.Activities;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.android.volley.Response;
-
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.util.List;
-
-import hkapps.playmxtv.Model.FichaResumida;
-import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
-import hkapps.playmxtv.Services.FichaResumidaHelper;
-import hkapps.playmxtv.Services.Requester;
-import hkapps.playmxtv.Services.UsuarioHelper;
 
 /*
  * MainActivity class that loads MainFragment
@@ -45,10 +31,5 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Intent me = getIntent();
-        Usuario user = (Usuario) me.getSerializableExtra("user");
-
-        Log.d("REQ", user.toString());
     }
 }

@@ -15,7 +15,6 @@
 package hkapps.playmxtv.Fragments;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -46,6 +45,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -53,10 +53,16 @@ import com.bumptech.glide.request.target.SimpleTarget;
 
 import hkapps.playmxtv.Activities.DetailsActivity;
 import hkapps.playmxtv.Activities.BrowseErrorActivity;
-import hkapps.playmxtv.CardPresenter;
-import hkapps.playmxtv.Model.Movie;
-import hkapps.playmxtv.Model.MovieList;
+import hkapps.playmxtv.Adapters.CardPresenter;
+import hkapps.playmxtv.Model.Enlace;
+import hkapps.playmxtv.Model.Ficha;
+import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
+import hkapps.playmxtv.Scrapper.ScrapperListener;
+import hkapps.playmxtv.Scrapper.StreamCloudRequest;
+import hkapps.playmxtv.Services.PlayMaxAPI;
+import hkapps.playmxtv.Services.Requester;
+import hkapps.playmxtv.Static.MyUtils;
 
 public class MainFragment extends BrowseFragment {
     private static final String TAG = "MainFragment";
@@ -75,6 +81,8 @@ public class MainFragment extends BrowseFragment {
     private URI mBackgroundURI;
     private BackgroundManager mBackgroundManager;
 
+    private Usuario user;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
@@ -84,9 +92,48 @@ public class MainFragment extends BrowseFragment {
 
         setupUIElements();
 
-        loadRows();
+        //Recuperamos el usuario
+        recoverUser();
+
+        //Creamos el adaptador
+        mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
+
+        //Pedimos las series
+        Requester.request(getActivity(), PlayMaxAPI.getInstance().requestSumary(user), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    List<Ficha> fichas = Ficha.listFromXML(response);
+                    Log.d("REQ",fichas.toString());
+
+                    loadMyRows(fichas);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Requester.request(getActivity(), PlayMaxAPI.getInstance().requestCatalogue(user), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    List<Ficha> fichas = Ficha.listFromXML(response);
+                    Log.d("REQ",fichas.toString());
+
+                    loadRecomendedRows(fichas);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         setupEventListeners();
+    }
+
+    private void recoverUser(){
+        Intent me = this.getActivity().getIntent();
+        user = (Usuario) me.getSerializableExtra("user");
+
+        Log.d("REQ", user.toString());
     }
 
     @Override
@@ -98,25 +145,31 @@ public class MainFragment extends BrowseFragment {
         }
     }
 
-    private void loadRows() {
-        List<Movie> list = MovieList.setupMovies();
+    private void loadMyRows(List<Ficha> fichas) {
 
-        mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         CardPresenter cardPresenter = new CardPresenter();
 
-        int i;
-        for (i = 0; i < NUM_ROWS; i++) {
-            if (i != 0) {
-                Collections.shuffle(list);
-            }
-            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
-            for (int j = 0; j < NUM_COLS; j++) {
-                listRowAdapter.add(list.get(j % 5));
-            }
-            HeaderItem header = new HeaderItem(i, MovieList.MOVIE_CATEGORY[i]);
-            mRowsAdapter.add(new ListRow(header, listRowAdapter));
-        }
+        ArrayObjectAdapter proximos = new ArrayObjectAdapter(cardPresenter);
+        ArrayObjectAdapter series = new ArrayObjectAdapter(cardPresenter);
+        ArrayObjectAdapter peliculas = new ArrayObjectAdapter(cardPresenter);
 
+        HeaderItem hproximos = new HeaderItem("Proximos Capitulos");
+        HeaderItem hseries = new HeaderItem("Tus Series");
+        HeaderItem hpeliculas = new HeaderItem("Tus Peliculas");
+
+        for(Ficha fr : fichas){
+            if(fr.getLastEpisode() != null)
+                proximos.add(fr);
+
+            if(fr.isSerie())
+                series.add(fr);
+            else peliculas.add(fr);
+        }
+        if(proximos.size() > 0) mRowsAdapter.add(new ListRow(0,hproximos, proximos));
+        mRowsAdapter.add(new ListRow(1,hseries, series));
+        mRowsAdapter.add(new ListRow(2,hpeliculas, peliculas));
+
+        /*
         HeaderItem gridHeader = new HeaderItem(i, "PREFERENCES");
 
         GridItemPresenter mGridPresenter = new GridItemPresenter();
@@ -126,6 +179,39 @@ public class MainFragment extends BrowseFragment {
         gridRowAdapter.add(getResources().getString(R.string.personal_settings));
         mRowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));
 
+        */
+        setAdapter(mRowsAdapter);
+
+    }
+    private void loadRecomendedRows(List<Ficha> fichas) {
+
+        CardPresenter cardPresenter = new CardPresenter();
+
+        ArrayObjectAdapter series = new ArrayObjectAdapter(cardPresenter);
+        ArrayObjectAdapter peliculas = new ArrayObjectAdapter(cardPresenter);
+
+        HeaderItem hseries = new HeaderItem(3,"Series Recomendadas");
+        HeaderItem hpeliculas = new HeaderItem(4,"Peliculas Recomendadas");
+
+        for(Ficha fr : fichas){
+            if(fr.isSerie())
+                series.add(fr);
+            else peliculas.add(fr);
+        }
+        mRowsAdapter.add(new ListRow(hseries, series));
+        mRowsAdapter.add(new ListRow(hpeliculas, peliculas));
+
+        /*
+        HeaderItem gridHeader = new HeaderItem(i, "PREFERENCES");
+
+        GridItemPresenter mGridPresenter = new GridItemPresenter();
+        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
+        gridRowAdapter.add(getResources().getString(R.string.grid_view));
+        gridRowAdapter.add(getString(R.string.error_fragment));
+        gridRowAdapter.add(getResources().getString(R.string.personal_settings));
+        mRowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));
+
+        */
         setAdapter(mRowsAdapter);
 
     }
@@ -142,9 +228,10 @@ public class MainFragment extends BrowseFragment {
     private void setupUIElements() {
         // setBadgeDrawable(getActivity().getResources().getDrawable(
         // R.drawable.videos_by_google_banner));
-        setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent
+        setTitle("PlayMax.TV"); // Badge, when set, takes precedent
         // over title
-        setHeadersState(HEADERS_ENABLED);
+        //setHeadersState(HEADERS_ENABLED);
+        setHeadersState(HEADERS_DISABLED);
         setHeadersTransitionOnBackEnabled(true);
 
         // set fastLane (or headers) background color
@@ -164,7 +251,7 @@ public class MainFragment extends BrowseFragment {
         });
 
         setOnItemViewClickedListener(new ItemViewClickedListener());
-        setOnItemViewSelectedListener(new ItemViewSelectedListener());
+        //setOnItemViewSelectedListener(new ItemViewSelectedListener());
     }
 
     protected void updateBackground(String uri) {
@@ -195,20 +282,64 @@ public class MainFragment extends BrowseFragment {
 
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
         @Override
-        public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
+        public void onItemClicked(final Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            if (item instanceof Movie) {
-                Movie movie = (Movie) item;
-                Log.d(TAG, "Item: " + item.toString());
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra(DetailsActivity.MOVIE, movie);
+            if (item instanceof Ficha) {
+                final Ficha fr = (Ficha) item;
 
-                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        getActivity(),
-                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                        DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
-                getActivity().startActivity(intent, bundle);
+                if(fr.getIdCapitulo()!= null){
+                    //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
+                    Requester.request(MainFragment.this.getActivity(),
+                            PlayMaxAPI.getInstance().requestEnlaces(user, fr, fr.getIdCapitulo()),
+                            new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            //Log.d("REQ", response);
+                            try {
+                                List<Enlace> enlaces = Enlace.listFromXML(response);
+                                if(enlaces.size()>0) {
+                                    Log.d("REQ", enlaces.toString());
+                                    StreamCloudRequest.getDirectUrl(MainFragment.this.getActivity(), enlaces.get(0).toString(), new ScrapperListener() {
+                                        @Override
+                                        public void onDirectUrlObtained(String direct_url) {
+                                            MyUtils.launchMXP(getActivity(), direct_url);
+                                        }
+                                    });
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }else if(fr.isSerie()){
+                    //Interfaz para series
+                }else{
+                    //Interfaz para peliculas
+                    Requester.request(MainFragment.this.getActivity(), PlayMaxAPI.getInstance().requestFicha(user, fr), new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                fr.completeFromXML(response);
+
+                                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                                intent.putExtra(DetailsActivity.MOVIE, fr);
+                                intent.putExtra(DetailsActivity.USER, user);
+
+                                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                        getActivity(),
+                                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                                        DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
+                                getActivity().startActivity(intent, bundle);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+                Log.d(TAG, "Item: " + item.toString());
+
+
             } else if (item instanceof String) {
                 if (((String) item).indexOf(getString(R.string.error_fragment)) >= 0) {
                     Intent intent = new Intent(getActivity(), BrowseErrorActivity.class);
@@ -218,18 +349,6 @@ public class MainFragment extends BrowseFragment {
                             .show();
                 }
             }
-        }
-    }
-
-    private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
-        @Override
-        public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
-                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
-            if (item instanceof Movie) {
-                mBackgroundURI = ((Movie) item).getBackgroundImageURI();
-                startBackgroundTimer();
-            }
-
         }
     }
 

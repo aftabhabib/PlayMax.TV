@@ -12,22 +12,22 @@
  * the License.
  */
 
-package hkapps.playmxtv;
+package hkapps.playmxtv.Adapters;
 
 import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter;
 
-import hkapps.playmxtv.Model.Movie;
+import hkapps.playmxtv.Model.Ficha;
 
 public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
 
     @Override
     protected void onBindDescription(ViewHolder viewHolder, Object item) {
-        Movie movie = (Movie) item;
+        Ficha movie = (Ficha) item;
 
         if (movie != null) {
             viewHolder.getTitle().setText(movie.getTitle());
-            viewHolder.getSubtitle().setText(movie.getStudio());
-            viewHolder.getBody().setText(movie.getDescription());
+            viewHolder.getSubtitle().setText("Duracion: "+movie.getDuration());
+            viewHolder.getBody().setText(movie.getSinopsis());
         }
     }
 }

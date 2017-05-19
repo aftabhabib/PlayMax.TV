@@ -25,7 +25,6 @@ import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.DetailsOverviewRow;
 import android.support.v17.leanback.widget.DetailsOverviewRowPresenter;
 import android.support.v17.leanback.widget.HeaderItem;
-import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnActionClickedListener;
@@ -33,11 +32,11 @@ import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.Response;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -48,12 +47,17 @@ import java.util.List;
 
 import hkapps.playmxtv.Activities.DetailsActivity;
 import hkapps.playmxtv.Activities.MainActivity;
-import hkapps.playmxtv.Activities.PlaybackOverlayActivity;
-import hkapps.playmxtv.CardPresenter;
-import hkapps.playmxtv.DetailsDescriptionPresenter;
-import hkapps.playmxtv.Model.Movie;
-import hkapps.playmxtv.Model.MovieList;
+import hkapps.playmxtv.Adapters.CardPresenter;
+import hkapps.playmxtv.Adapters.DetailsDescriptionPresenter;
+import hkapps.playmxtv.Model.Enlace;
+import hkapps.playmxtv.Model.Ficha;
+import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
+import hkapps.playmxtv.Scrapper.ScrapperListener;
+import hkapps.playmxtv.Scrapper.StreamCloudRequest;
+import hkapps.playmxtv.Services.PlayMaxAPI;
+import hkapps.playmxtv.Services.Requester;
+import hkapps.playmxtv.Static.MyUtils;
 import hkapps.playmxtv.Static.Utils;
 
 /*
@@ -64,15 +68,15 @@ public class VideoDetailsFragment extends DetailsFragment {
     private static final String TAG = "VideoDetailsFragment";
 
     private static final int ACTION_WATCH_TRAILER = 1;
-    private static final int ACTION_RENT = 2;
-    private static final int ACTION_BUY = 3;
+    private static final int ACTION_PLAY = 2;
 
-    private static final int DETAIL_THUMB_WIDTH = 274;
-    private static final int DETAIL_THUMB_HEIGHT = 274;
+    private static final int DETAIL_THUMB_WIDTH = 200;
+    private static final int DETAIL_THUMB_HEIGHT = 300;
 
     private static final int NUM_COLS = 10;
 
-    private Movie mSelectedMovie;
+
+    private Ficha mSelectedMovie;
 
     private ArrayObjectAdapter mAdapter;
     private ClassPresenterSelector mPresenterSelector;
@@ -80,6 +84,7 @@ public class VideoDetailsFragment extends DetailsFragment {
     private BackgroundManager mBackgroundManager;
     private Drawable mDefaultBackground;
     private DisplayMetrics mMetrics;
+    private Usuario mActiveUser;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,16 +93,18 @@ public class VideoDetailsFragment extends DetailsFragment {
 
         prepareBackgroundManager();
 
-        mSelectedMovie = (Movie) getActivity().getIntent()
+        mSelectedMovie = (Ficha) getActivity().getIntent()
                 .getSerializableExtra(DetailsActivity.MOVIE);
+        mActiveUser = (Usuario) getActivity().getIntent()
+                .getSerializableExtra(DetailsActivity.USER);
         if (mSelectedMovie != null) {
             setupAdapter();
             setupDetailsOverviewRow();
             setupDetailsOverviewRowPresenter();
-            setupMovieListRow();
-            setupMovieListRowPresenter();
-            updateBackground(mSelectedMovie.getBackgroundImageUrl());
-            setOnItemViewClickedListener(new ItemViewClickedListener());
+            //setupMovieListRow();
+            //setupMovieListRowPresenter();
+            updateBackground(mSelectedMovie.getCover());
+            //setOnItemViewClickedListener(new ItemViewClickedListener());
         } else {
             Intent intent = new Intent(getActivity(), MainActivity.class);
             startActivity(intent);
@@ -146,7 +153,7 @@ public class VideoDetailsFragment extends DetailsFragment {
         int height = Utils.convertDpToPixel(getActivity()
                 .getApplicationContext(), DETAIL_THUMB_HEIGHT);
         Glide.with(getActivity())
-                .load(mSelectedMovie.getCardImageUrl())
+                .load(mSelectedMovie.getPoster())
                 .centerCrop()
                 .error(R.drawable.default_background)
                 .into(new SimpleTarget<GlideDrawable>(width, height) {
@@ -160,12 +167,8 @@ public class VideoDetailsFragment extends DetailsFragment {
                     }
                 });
 
-        row.addAction(new Action(ACTION_WATCH_TRAILER, getResources().getString(
-                R.string.watch_trailer_1), getResources().getString(R.string.watch_trailer_2)));
-        row.addAction(new Action(ACTION_RENT, getResources().getString(R.string.rent_1),
-                getResources().getString(R.string.rent_2)));
-        row.addAction(new Action(ACTION_BUY, getResources().getString(R.string.buy_1),
-                getResources().getString(R.string.buy_2)));
+        row.addAction(new Action(ACTION_PLAY, "Reproducir"));
+        //row.addAction(new Action(ACTION_WATCH_TRAILER, "Trailer"));
 
         mAdapter.add(row);
     }
@@ -185,10 +188,33 @@ public class VideoDetailsFragment extends DetailsFragment {
             @Override
             public void onActionClicked(Action action) {
                 if (action.getId() == ACTION_WATCH_TRAILER) {
-                    Intent intent = new Intent(getActivity(), PlaybackOverlayActivity.class);
-                    intent.putExtra(DetailsActivity.MOVIE, mSelectedMovie);
-                    startActivity(intent);
-                } else {
+                    //Youtube
+                }if (action.getId() == ACTION_PLAY) {
+                    //Streamcloud
+                    //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
+                    Requester.request(VideoDetailsFragment.this.getActivity(),
+                            PlayMaxAPI.getInstance().requestEnlaces(mActiveUser, mSelectedMovie, "0"),
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    //Log.d("REQ", response);
+                                    try {
+                                        List<Enlace> enlaces = Enlace.listFromXML(response);
+                                        if(enlaces.size() > 0) {
+                                            Log.d("REQ", enlaces.toString());
+                                            StreamCloudRequest.getDirectUrl(VideoDetailsFragment.this.getActivity(), enlaces.get(0).toString(), new ScrapperListener() {
+                                                @Override
+                                                public void onDirectUrlObtained(String direct_url) {
+                                                    MyUtils.launchMXP(getActivity(), direct_url);
+                                                }
+                                            });
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                }else {
                     Toast.makeText(getActivity(), action.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -196,6 +222,7 @@ public class VideoDetailsFragment extends DetailsFragment {
         mPresenterSelector.addClassPresenter(DetailsOverviewRow.class, detailsPresenter);
     }
 
+    /*
     private void setupMovieListRow() {
         String subcategories[] = {getString(R.string.related_movies)};
         List<Movie> list = MovieList.list;
@@ -212,14 +239,17 @@ public class VideoDetailsFragment extends DetailsFragment {
 
     private void setupMovieListRowPresenter() {
         mPresenterSelector.addClassPresenter(ListRow.class, new ListRowPresenter());
-    }
+    }*/
 
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            if (item instanceof Movie) {
+            if (item instanceof Ficha) {
+                Ficha f = (Ficha) item;
+                Toast.makeText(getActivity(), f.toString(), Toast.LENGTH_LONG).show();
+                /*
                 Movie movie = (Movie) item;
                 Log.d(TAG, "Item: " + item.toString());
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
@@ -233,6 +263,7 @@ public class VideoDetailsFragment extends DetailsFragment {
                         ((ImageCardView) itemViewHolder.view).getMainImageView(),
                         DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
                 getActivity().startActivity(intent, bundle);
+                */
             }
         }
     }

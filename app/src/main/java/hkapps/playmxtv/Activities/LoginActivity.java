@@ -3,7 +3,6 @@ package hkapps.playmxtv.Activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.android.volley.Response;
 
@@ -13,32 +12,35 @@ import java.io.IOException;
 
 import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
+import hkapps.playmxtv.Services.PlayMaxAPI;
 import hkapps.playmxtv.Services.Requester;
-import hkapps.playmxtv.Services.UsuarioHelper;
 
 /**
  * Created by hkfuertes on 17/05/2017.
  */
 
 public class LoginActivity extends Activity {
-    UsuarioHelper uhelper = new UsuarioHelper();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         try {
-            Requester.request(this,uhelper.getRequestForLogin("hkfuertes","Gorila6030"),new Response.Listener<String>(){
+            Requester.request(this, PlayMaxAPI.getInstance().requestLogin("username","password"),new Response.Listener<String>(){
 
                 @Override
                 public void onResponse(String response) {
                     try {
-                        Usuario user = uhelper.getUsuario(response);
+                        Usuario user = Usuario.fromXML(response);
 
-                        Intent main = new Intent(LoginActivity.this, MainActivity.class);
-                        main.putExtra("user",user);
-                        startActivity(main);
+                        if(user != null) {
+                            Intent main = new Intent(LoginActivity.this, MainActivity.class);
+                            main.putExtra("user", user);
+                            //main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(main);
+                            finish();
+                        }
 
 
                     } catch (XmlPullParserException e) {

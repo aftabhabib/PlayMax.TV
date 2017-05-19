@@ -78,7 +78,7 @@ public class Requester {
         queue.add(stringRequest);
     }
 
-    interface Requestable{
+    public interface Requestable{
         String getUrl();
         int getMethod();
         Map<String, String> getBody();

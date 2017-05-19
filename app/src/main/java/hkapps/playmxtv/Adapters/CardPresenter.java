@@ -12,7 +12,7 @@
  * the License.
  */
 
-package hkapps.playmxtv;
+package hkapps.playmxtv.Adapters;
 
 import android.graphics.drawable.Drawable;
 import android.support.v17.leanback.widget.ImageCardView;
@@ -22,7 +22,8 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 
-import hkapps.playmxtv.Model.Movie;
+import hkapps.playmxtv.Model.Ficha;
+import hkapps.playmxtv.R;
 
 /*
  * A CardPresenter is used to generate Views and bind Objects to them on demand.
@@ -31,8 +32,8 @@ import hkapps.playmxtv.Model.Movie;
 public class CardPresenter extends Presenter {
     private static final String TAG = "CardPresenter";
 
-    private static final int CARD_WIDTH = 313;
-    private static final int CARD_HEIGHT = 176;
+    private static final int CARD_WIDTH = 200;
+    private static final int CARD_HEIGHT = 300;
     private static int sSelectedBackgroundColor;
     private static int sDefaultBackgroundColor;
     private Drawable mDefaultCardImage;
@@ -69,20 +70,20 @@ public class CardPresenter extends Presenter {
 
     @Override
     public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
-        Movie movie = (Movie) item;
+        Ficha fr = (Ficha) item;
         ImageCardView cardView = (ImageCardView) viewHolder.view;
 
-        Log.d(TAG, "onBindViewHolder");
-        if (movie.getCardImageUrl() != null) {
-            cardView.setTitleText(movie.getTitle());
-            cardView.setContentText(movie.getStudio());
+        if (fr.getPoster() != null) {
+            cardView.setTitleText(fr.getTitle());
+            if(fr.getLastEpisode() != null) cardView.setContentText(fr.getLastEpisode());
             cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
             Glide.with(viewHolder.view.getContext())
-                    .load(movie.getCardImageUrl())
+                    .load(fr.getPoster())
                     .centerCrop()
                     .error(mDefaultCardImage)
                     .into(cardView.getMainImageView());
         }
+
     }
 
     @Override
