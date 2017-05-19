@@ -12,22 +12,28 @@
  * the License.
  */
 
-package hkapps.playmxtv.Adapters;
+package hkapps.playmxtv.Activities;
 
-import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter;
+import android.app.Activity;
+import android.os.Bundle;
 
-import hkapps.playmxtv.Model.Ficha;
+import hkapps.playmxtv.R;
 
-public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
+/*
+ * Details activity class that loads LeanbackDetailsFragment class
+ */
+public class LinkDetailsActivity extends Activity {
+    public static final String SHARED_ELEMENT_NAME = "hero";
+    public static final String MOVIE = "Movie";
+    public static final String USER = "User";
 
+    /**
+     * Called when the activity is first created.
+     */
     @Override
-    protected void onBindDescription(ViewHolder viewHolder, Object item) {
-        Ficha movie = (Ficha) item;
-
-        if (movie != null) {
-            viewHolder.getTitle().setText(movie.getTitle());
-            viewHolder.getSubtitle().setText("Duracion: "+movie.getDuration());
-            viewHolder.getBody().setText(movie.getSinopsis());
-        }
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.link_details);
     }
+
 }

@@ -32,8 +32,8 @@ import hkapps.playmxtv.R;
 public class CardPresenter extends Presenter {
     private static final String TAG = "CardPresenter";
 
-    private static final int CARD_WIDTH = 200;
-    private static final int CARD_HEIGHT = 300;
+    private static final int CARD_WIDTH = 300;
+    private static final int CARD_HEIGHT = 450;
     private static int sSelectedBackgroundColor;
     private static int sDefaultBackgroundColor;
     private Drawable mDefaultCardImage;

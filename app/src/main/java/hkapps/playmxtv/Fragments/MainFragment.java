@@ -14,6 +14,7 @@
 
 package hkapps.playmxtv.Fragments;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Timer;
@@ -51,11 +52,14 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
+import org.xmlpull.v1.XmlPullParserException;
+
 import hkapps.playmxtv.Activities.DetailsActivity;
 import hkapps.playmxtv.Activities.BrowseErrorActivity;
 import hkapps.playmxtv.Adapters.CardPresenter;
 import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
+import hkapps.playmxtv.Model.Pelicula;
 import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
 import hkapps.playmxtv.Scrapper.ScrapperListener;
@@ -70,8 +74,6 @@ public class MainFragment extends BrowseFragment {
     private static final int BACKGROUND_UPDATE_DELAY = 300;
     private static final int GRID_ITEM_WIDTH = 200;
     private static final int GRID_ITEM_HEIGHT = 200;
-    private static final int NUM_ROWS = 6;
-    private static final int NUM_COLS = 15;
 
     private final Handler mHandler = new Handler();
     private ArrayObjectAdapter mRowsAdapter;
@@ -287,6 +289,36 @@ public class MainFragment extends BrowseFragment {
 
             if (item instanceof Ficha) {
                 final Ficha fr = (Ficha) item;
+
+                //Interfaz para peliculas
+                Requester.request(MainFragment.this.getActivity(), PlayMaxAPI.getInstance().requestFicha(user, fr), new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            fr.completeFromXML(response);
+
+                            if(fr.getIdCapitulo()!= null){
+                                //Si tenemos capitulo: Lanzamos el detail para capitulo
+                            }else if(fr.isSerie()){
+                                //Si es Serie
+                            }else {
+                                //Es pelicula: lanzamos el selector de pelicula
+                                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                                intent.putExtra(DetailsActivity.MOVIE, fr);
+                                intent.putExtra(DetailsActivity.USER, user);
+
+                                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                        getActivity(),
+                                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                                        DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
+                                getActivity().startActivity(intent, bundle);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
 
                 if(fr.getIdCapitulo()!= null){
                     //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
