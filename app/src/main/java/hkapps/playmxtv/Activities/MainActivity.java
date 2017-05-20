@@ -15,6 +15,7 @@
 package hkapps.playmxtv.Activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import hkapps.playmxtv.R;
@@ -34,5 +35,11 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    public boolean onSearchRequested() {
+        startActivity(new Intent(this, SearchActivity.class));
+        return true;
     }
 }

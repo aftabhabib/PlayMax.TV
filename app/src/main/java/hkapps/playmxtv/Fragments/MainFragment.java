@@ -53,8 +53,10 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import hkapps.playmxtv.Activities.MainActivity;
 import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
 import hkapps.playmxtv.Activities.BrowseErrorActivity;
+import hkapps.playmxtv.Activities.SearchActivity;
 import hkapps.playmxtv.Activities.SerieDetailsActivity;
 import hkapps.playmxtv.Adapters.CardPresenter;
+import hkapps.playmxtv.Liestener.ResultsListener;
 import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
 import hkapps.playmxtv.Model.Usuario;
@@ -243,12 +245,13 @@ public class MainFragment extends BrowseFragment {
 
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement your own in-app search", Toast.LENGTH_LONG)
-                        .show();
+                Intent search = new Intent(MainFragment.this.getActivity(), SearchActivity.class);
+                search.putExtra(MainActivity.USER,user);
+                MainFragment.this.getActivity().startActivity(search);
             }
         });
 
-        setOnItemViewClickedListener(new ItemViewClickedListener());
+        setOnItemViewClickedListener(new ResultsListener(this.getActivity()));
         //setOnItemViewSelectedListener(new ItemViewSelectedListener());
     }
 
@@ -278,87 +281,7 @@ public class MainFragment extends BrowseFragment {
         mBackgroundTimer.schedule(new UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY);
     }
 
-    private final class ItemViewClickedListener implements OnItemViewClickedListener {
-        @Override
-        public void onItemClicked(final Presenter.ViewHolder itemViewHolder, Object item,
-                                  RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            if (item instanceof Ficha) {
-                final Ficha fr = (Ficha) item;
-
-                //Interfaz para peliculas
-                Requester.request(MainFragment.this.getActivity(), PlayMaxAPI.getInstance().requestFicha(user, fr), new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            fr.completeFromXML(response);
-
-                            if(fr.getIdCapitulo()!= null){
-                                //Si tenemos capitulo: Lanzamos el detail para capitulo
-                                //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
-                                Requester.request(MainFragment.this.getActivity(),
-                                        PlayMaxAPI.getInstance().requestEnlaces(user, fr, fr.getIdCapitulo()),
-                                        new Response.Listener<String>() {
-                                            @Override
-                                            public void onResponse(String response) {
-                                                try {
-                                                    List<Enlace> enlaces = Enlace.listFromXML(response);
-                                                    if(enlaces.size() > 0) {
-                                                        Log.d("REQ", enlaces.toString());
-                                                        StreamCloudRequest.getDirectUrl(MainFragment.this.getActivity(), enlaces.get(0).toString(), new ScrapperListener() {
-                                                            @Override
-                                                            public void onDirectUrlObtained(String direct_url) {
-                                                                MyUtils.launchMXP(getActivity(), direct_url);
-                                                            }
-                                                        });
-                                                    }
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        });
-                            }else if(fr.isSerie()){
-                                //Es Serie
-                                Intent intent = new Intent(getActivity(), SerieDetailsActivity.class);
-                                intent.putExtra(MainActivity.FICHA, fr);
-                                intent.putExtra(MainActivity.USER, user);
-
-                                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                        getActivity(),
-                                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                                        SerieDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
-                                getActivity().startActivity(intent, bundle);
-                            }else {
-                                //Es pelicula: lanzamos el selector de pelicula
-                                Intent intent = new Intent(getActivity(), PeliculasDetailsActivity.class);
-                                intent.putExtra(MainActivity.FICHA, fr);
-                                intent.putExtra(MainActivity.USER, user);
-
-                                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                        getActivity(),
-                                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                                        PeliculasDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
-                                getActivity().startActivity(intent, bundle);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                Log.d(TAG, "Item: " + item.toString());
-
-
-            } else if (item instanceof String) {
-                if (((String) item).indexOf(getString(R.string.error_fragment)) >= 0) {
-                    Intent intent = new Intent(getActivity(), BrowseErrorActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(getActivity(), ((String) item), Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
-        }
-    }
 
     private class UpdateBackgroundTask extends TimerTask {
 
