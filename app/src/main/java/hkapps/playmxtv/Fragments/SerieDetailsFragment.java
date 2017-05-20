@@ -33,6 +33,8 @@ import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.android.volley.Response;
 import com.bumptech.glide.Glide;
@@ -48,9 +50,11 @@ import hkapps.playmxtv.Adapters.EpisodePresenter;
 import hkapps.playmxtv.Adapters.GridItemPresenter;
 import hkapps.playmxtv.Adapters.PeliculasDetailsDescriptionPresenter;
 import hkapps.playmxtv.Adapters.StringPresenter;
+import hkapps.playmxtv.Adapters.TemporadaPresenter;
 import hkapps.playmxtv.Model.Capitulo;
 import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
+import hkapps.playmxtv.Model.Temporada;
 import hkapps.playmxtv.Model.Trailer;
 import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
@@ -65,7 +69,7 @@ import hkapps.playmxtv.Static.Utils;
  * LeanbackDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
  * It shows a detailed view of video and its meta plus related videos.
  */
-public class SerieDetailsFragment extends DetailsFragment implements OnActionClickedListener, BaseOnItemViewClickedListener {
+public class SerieDetailsFragment extends DetailsFragment implements OnActionClickedListener, BaseOnItemViewClickedListener, TemporadaPresenter.OnCapituloListener {
     private static final String TAG = "VideoDetailsFragment";
 
     private static final int ACTION_RANDOM = 1;
@@ -172,31 +176,39 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
         mRowsAdapter = new ArrayObjectAdapter(selector);
 
         detailsOverview = new DetailsOverviewRow(mSelectedShow);
-        detailsOverview.setImageDrawable(getResources().getDrawable(R.drawable.default_background));
+        //detailsOverview.setImageDrawable(getResources().getDrawable(R.drawable.default_background));
 
         int width = Utils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_WIDTH);
         int height = Utils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_HEIGHT);
 
-        Glide.with(getActivity())
-                .load(mSelectedShow.getPoster())
-                .centerCrop()
-                .error(R.drawable.default_background)
-                .into(new SimpleTarget<GlideDrawable>(width, height) {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource,
-                                                GlideAnimation<? super GlideDrawable>
-                                                        glideAnimation) {
-                        Log.d(TAG, "details overview card image url ready: " + resource);
-                        detailsOverview.setImageDrawable(resource);
-                        mRowsAdapter.notifyArrayItemRangeChanged(0, mRowsAdapter.size());
-                    }
-                });
+
 
         // Add images and action buttons to the details view
         detailsOverview.addAction(new Action(ACTION_PLAY, "Reproducir"));
         detailsOverview.addAction(new Action(ACTION_RANDOM, "Aleatorio"));
         mRowsAdapter.add(detailsOverview);
 
+        Glide.with(getActivity())
+                .load(mSelectedShow.getPoster())
+                .fitCenter()
+                .error(R.drawable.default_background)
+                .into(new SimpleTarget<GlideDrawable>(width, height) {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        Log.d(TAG, "details overview card image url ready: " + resource);
+                        detailsOverview.setImageDrawable(resource);
+                        detailsOverview.setImageScaleUpAllowed(true);
+                        mRowsAdapter.notifyArrayItemRangeChanged(0, mRowsAdapter.size());
+                    }
+                });
+
+        List<Temporada> temps = Temporada.listFromCapitulos(mSelectedShow.getCapitulos());
+        episodeRowAdapter = new ArrayObjectAdapter(new TemporadaPresenter(this));
+        episodeRowAdapter.addAll(0, temps);
+        HeaderItem header = new HeaderItem(0, "Capitulos");
+        mRowsAdapter.add(new ListRow(header, episodeRowAdapter));
+
+        /*
         ListRow current;
         for(int i = 0; i<mSelectedShow.getSeasons(); i++) {
             List<Capitulo> temp = Capitulo.filterByTemporada(mSelectedShow.getCapitulos(),i);
@@ -208,6 +220,7 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
                 mRowsAdapter.add(current);
             }
         }
+         */
         setAdapter(mRowsAdapter);
     }
 
@@ -216,15 +229,26 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
         if (action.getId() == ACTION_PLAY){
             //lanzarPelicula();
         }else if(action.getId() == ACTION_RANDOM){
-            //lanzarTrailer();
+            lanzarCapitulo(Capitulo.random(mSelectedShow.getCapitulos()));
         }
-        Log.d("TEST","TEST");
     }
 
     @Override
     public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Object row) {
-        Capitulo episode = (Capitulo) item;
-        lanzarCapitulo(episode);
+        if(item instanceof Action){
+            Action action = (Action) item;
+            if (action.getId() == ACTION_PLAY){
+                //lanzarPelicula();
+            }else if(action.getId() == ACTION_RANDOM){
+                lanzarCapitulo(Capitulo.random(mSelectedShow.getCapitulos()));
+            }
+        }
+
+    }
+
+    @Override
+    public void onCapituloClicked(Capitulo capitulo) {
+        lanzarCapitulo(capitulo);
     }
 }
 

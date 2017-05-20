@@ -13,9 +13,11 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Random;
 
 import hkapps.playmxtv.Services.PlayMaxAPI;
 
@@ -23,7 +25,7 @@ import hkapps.playmxtv.Services.PlayMaxAPI;
  * Created by hkfuertes on 20/05/2017.
  */
 
-public class Capitulo implements Serializable{
+public class Capitulo implements Serializable,Comparable<Capitulo> {
     /*
     <Episodes>
         <Season_0>
@@ -44,16 +46,16 @@ public class Capitulo implements Serializable{
     </Episodes>
      */
     String id_capitulo;
-    String temporada;
-    String num_capitulo;
+    int temporada;
+    int num_capitulo;
     String nombre;
     String dateunix;
     String viewed;
 
     public Capitulo(String id_capitulo, String temporada, String num_capitulo, String nombre, String dateunix, String viewed){
         this.id_capitulo = id_capitulo;
-        this.temporada = temporada;
-        this.num_capitulo = num_capitulo;
+        this.temporada = Integer.parseInt(temporada);
+        this.num_capitulo = Integer.parseInt(num_capitulo);
         this.nombre = nombre;
         this.dateunix = dateunix;
         this.viewed = viewed;
@@ -136,7 +138,7 @@ public class Capitulo implements Serializable{
         return num_capitulo+" "+nombre;
     }
 
-    public String getNum() {
+    public int getNum() {
         return num_capitulo;
     }
 
@@ -152,6 +154,18 @@ public class Capitulo implements Serializable{
     }
 
     public int getTemporada() {
-        return Integer.parseInt(temporada);
+        return temporada;
+    }
+
+    public static Capitulo random(List<Capitulo> capitulos){
+        Random r = new Random(System.currentTimeMillis());
+        int index = r.nextInt(capitulos.size()+ 1);
+        return capitulos.get(index);
+    }
+
+
+    @Override
+    public int compareTo(@NonNull Capitulo o) {
+        return Integer.compare(num_capitulo, o.num_capitulo);
     }
 }

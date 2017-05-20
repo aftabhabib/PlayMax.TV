@@ -27,7 +27,7 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         try {
-            Requester.request(this, PlayMaxAPI.getInstance().requestLogin("username","password"),new Response.Listener<String>(){
+            Requester.request(this, PlayMaxAPI.getInstance().requestLogin("usuario","clave"),new Response.Listener<String>(){
 
                 @Override
                 public void onResponse(String response) {
