@@ -23,31 +23,19 @@ import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.DetailsOverviewRow;
-import android.support.v17.leanback.widget.DetailsOverviewRowPresenter;
-import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.android.volley.Response;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
-import java.util.List;
-
-import hkapps.playmxtv.Activities.DetailsActivity;
+import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
 import hkapps.playmxtv.Activities.MainActivity;
-import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
 import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
-import hkapps.playmxtv.Scrapper.ScrapperListener;
-import hkapps.playmxtv.Scrapper.StreamCloudRequest;
-import hkapps.playmxtv.Services.PlayMaxAPI;
-import hkapps.playmxtv.Services.Requester;
-import hkapps.playmxtv.Static.MyUtils;
 import hkapps.playmxtv.Static.Utils;
 
 /*
@@ -82,9 +70,9 @@ public class LinkDetailsFragment extends DetailsFragment {
         prepareBackgroundManager();
 
         mSelectedFicha = (Ficha) getActivity().getIntent()
-                .getSerializableExtra(DetailsActivity.MOVIE);
+                .getSerializableExtra(MainActivity.FICHA);
         mActiveUser = (Usuario) getActivity().getIntent()
-                .getSerializableExtra(DetailsActivity.USER);
+                .getSerializableExtra(MainActivity.USER);
         if (mSelectedFicha != null) {
             setupAdapter();
             setupDetailsOverviewRow();

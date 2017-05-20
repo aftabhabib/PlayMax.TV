@@ -1,6 +1,9 @@
 package hkapps.playmxtv.Model;
 
+import android.graphics.Paint;
 import android.util.Xml;
+
+import com.android.volley.Response;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -77,6 +80,16 @@ public class Ficha implements Serializable {
     //Pueden ser null --> indicara que es resumen de capitulo.
     String id_capitulo;
     String capitulo;
+    String seasons;
+
+    List<Enlace> enlaces = null;
+    List<Capitulo> capitulos = null;
+
+    public List<Enlace> getEnlaces(){return enlaces;}
+    public void setEnlaces(List<Enlace> enlaces){this.enlaces = enlaces;}
+
+    public List<Capitulo> getCapitulos(){return capitulos;}
+    public void setCapitulos(List<Capitulo> capitulos){this.capitulos = capitulos;};
 
     public Ficha(String id, String type, String title, String poster, String rating, String your_rating, boolean isSerie){
         this.title = title;
@@ -213,6 +226,9 @@ public class Ficha implements Serializable {
                         case PlayMaxAPI.COUNTRY_TAG:
                             country = CURRENT_TEXT;
                             break;
+                        case PlayMaxAPI.SEASONS_TAG:
+                            seasons = CURRENT_TEXT;
+                            break;
                         case PlayMaxAPI.SINOPSIS_TAG:
                             sinopsys = CURRENT_TEXT;
                             break;
@@ -224,6 +240,11 @@ public class Ficha implements Serializable {
             eventType = parser.next();
         }
         if(messageError != null) throw new IOException(messageError);
+
+        //Fullfill Episodes
+        if(isSerie){
+            setCapitulos(Capitulo.listFromXML(response));
+        }
     }
 
     public static List<Ficha> listFromXML(String response) throws XmlPullParserException, IOException {
@@ -278,5 +299,9 @@ public class Ficha implements Serializable {
 
     public String getIdCapitulo() {
         return id_capitulo;
+    }
+
+    public int getSeasons() {
+        return Integer.parseInt(seasons);
     }
 }

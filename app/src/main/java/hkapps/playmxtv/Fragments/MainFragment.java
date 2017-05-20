@@ -14,7 +14,6 @@
 
 package hkapps.playmxtv.Fragments;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Timer;
@@ -33,7 +32,6 @@ import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
-import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
@@ -52,21 +50,16 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import hkapps.playmxtv.Activities.DetailsActivity;
+import hkapps.playmxtv.Activities.MainActivity;
+import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
 import hkapps.playmxtv.Activities.BrowseErrorActivity;
+import hkapps.playmxtv.Activities.SerieDetailsActivity;
 import hkapps.playmxtv.Adapters.CardPresenter;
-import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
-import hkapps.playmxtv.Model.Pelicula;
 import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
-import hkapps.playmxtv.Scrapper.ScrapperListener;
-import hkapps.playmxtv.Scrapper.StreamCloudRequest;
 import hkapps.playmxtv.Services.PlayMaxAPI;
 import hkapps.playmxtv.Services.Requester;
-import hkapps.playmxtv.Static.MyUtils;
 
 public class MainFragment extends BrowseFragment {
     private static final String TAG = "MainFragment";
@@ -228,12 +221,11 @@ public class MainFragment extends BrowseFragment {
     }
 
     private void setupUIElements() {
-        // setBadgeDrawable(getActivity().getResources().getDrawable(
-        // R.drawable.videos_by_google_banner));
-        setTitle("PlayMax.TV"); // Badge, when set, takes precedent
+        //setBadgeDrawable(getActivity().getResources().getDrawable(R.drawable.app_icon));
+        //setTitle("PlayMax.TV"); // Badge, when set, takes precedent
         // over title
-        //setHeadersState(HEADERS_ENABLED);
-        setHeadersState(HEADERS_DISABLED);
+        setHeadersState(HEADERS_ENABLED);
+        //setHeadersState(HEADERS_DISABLED);
         setHeadersTransitionOnBackEnabled(true);
 
         // set fastLane (or headers) background color
@@ -300,17 +292,26 @@ public class MainFragment extends BrowseFragment {
                             if(fr.getIdCapitulo()!= null){
                                 //Si tenemos capitulo: Lanzamos el detail para capitulo
                             }else if(fr.isSerie()){
-                                //Si es Serie
-                            }else {
-                                //Es pelicula: lanzamos el selector de pelicula
-                                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                                intent.putExtra(DetailsActivity.MOVIE, fr);
-                                intent.putExtra(DetailsActivity.USER, user);
+                                //Es Serie
+                                Intent intent = new Intent(getActivity(), SerieDetailsActivity.class);
+                                intent.putExtra(MainActivity.FICHA, fr);
+                                intent.putExtra(MainActivity.USER, user);
 
                                 Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                         getActivity(),
                                         ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                                        DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
+                                        SerieDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
+                                getActivity().startActivity(intent, bundle);
+                            }else {
+                                //Es pelicula: lanzamos el selector de pelicula
+                                Intent intent = new Intent(getActivity(), PeliculasDetailsActivity.class);
+                                intent.putExtra(MainActivity.FICHA, fr);
+                                intent.putExtra(MainActivity.USER, user);
+
+                                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                        getActivity(),
+                                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                                        PeliculasDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
                                 getActivity().startActivity(intent, bundle);
                             }
                         } catch (Exception e) {
@@ -318,57 +319,6 @@ public class MainFragment extends BrowseFragment {
                         }
                     }
                 });
-
-
-                if(fr.getIdCapitulo()!= null){
-                    //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
-                    Requester.request(MainFragment.this.getActivity(),
-                            PlayMaxAPI.getInstance().requestEnlaces(user, fr, fr.getIdCapitulo()),
-                            new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            //Log.d("REQ", response);
-                            try {
-                                List<Enlace> enlaces = Enlace.listFromXML(response);
-                                if(enlaces.size()>0) {
-                                    Log.d("REQ", enlaces.toString());
-                                    StreamCloudRequest.getDirectUrl(MainFragment.this.getActivity(), enlaces.get(0).toString(), new ScrapperListener() {
-                                        @Override
-                                        public void onDirectUrlObtained(String direct_url) {
-                                            MyUtils.launchMXP(getActivity(), direct_url);
-                                        }
-                                    });
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }else if(fr.isSerie()){
-                    //Interfaz para series
-                }else{
-                    //Interfaz para peliculas
-                    Requester.request(MainFragment.this.getActivity(), PlayMaxAPI.getInstance().requestFicha(user, fr), new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            try {
-                                fr.completeFromXML(response);
-
-                                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                                intent.putExtra(DetailsActivity.MOVIE, fr);
-                                intent.putExtra(DetailsActivity.USER, user);
-
-                                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                        getActivity(),
-                                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                                        DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
-                                getActivity().startActivity(intent, bundle);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }
                 Log.d(TAG, "Item: " + item.toString());
 
 

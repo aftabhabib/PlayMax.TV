@@ -28,6 +28,14 @@ public class PlayMaxAPI {
     public static final String QNAME_TAG = "QualityA";
     public static final String VERSION_TAG = "Version";
     public static final String ITEM_TAG = "Item";
+    public static final String ID_YOUTUBE_TAG = "IdYoutube";
+    public static final String SEASON_TAG = "Season";
+    public static final String EPISODE_NUM_TAG = "Episode";
+    public static final String EPISODE_NAME_TAG = "EpisodeName";
+    public static final String EPISODE_DATEUNIX_TAG = "EpisodeDateUnix";
+    public static final String EPISODE_VIEWED_TAG = "EpisodeViewed";
+    public static final String EPISODES_TAG = "Episodes";
+    public static final String SEASONS_TAG = "Seasons";
     private static PlayMaxAPI me=null;
 
     public static final String TYPE_TAG = "Type";
@@ -177,6 +185,27 @@ public class PlayMaxAPI {
                         "?apikey="+ Constants.APIKEY+
                         "&sid="+user.getSid()+
                         "&cid="+capitulo_id +
+                        "&ficha="+f.getId();
+            }
+
+            @Override
+            public int getMethod() {
+                return Request.Method.GET;
+            }
+
+            @Override
+            public Map<String,String> getBody() {
+                return null;
+            }
+        };
+    }
+    public Requester.Requestable requestTrailers(final Usuario user, final Ficha f){
+        return new Requester.Requestable() {
+            @Override
+            public String getUrl() {
+                return "https://playmax.mx/c_trailers.php" +
+                        "?apikey="+ Constants.APIKEY+
+                        "&sid="+user.getSid()+
                         "&ficha="+f.getId();
             }
 

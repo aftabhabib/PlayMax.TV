@@ -20,19 +20,18 @@ import android.os.Bundle;
 import hkapps.playmxtv.R;
 
 /*
- * MainActivity class that loads MainFragment
+ * Details activity class that loads LeanbackDetailsFragment class
  */
-public class MainActivity extends Activity {
-    public static final String FICHA = "Ficha";
-    public static final String USER = "Usuario";
+public class PeliculasDetailsActivity extends Activity {
+    public static final String SHARED_ELEMENT_NAME = "hero";
 
     /**
      * Called when the activity is first created.
      */
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_details);
     }
+
 }

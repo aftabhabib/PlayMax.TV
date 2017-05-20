@@ -32,7 +32,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activities.MainActivity" />
-        <activity android:name=".Activities.DetailsActivity" />
+        <activity android:name=".Activities.PeliculasDetailsActivity" />
+        <activity android:name=".Activities.SerieDetailsActivity" />
         <activity android:name=".Activities.BrowseErrorActivity" />
     </application>
 

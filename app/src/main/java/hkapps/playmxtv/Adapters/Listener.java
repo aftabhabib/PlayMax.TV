@@ -15,13 +15,13 @@ private final class ItemViewClickedListener implements OnItemViewClickedListener
         if (item instanceof Movie) {
             Movie movie = (Movie) item;
             Log.d(TAG, "Item: " + item.toString());
-            Intent intent = new Intent(getActivity(), DetailsActivity.class);
-            intent.putExtra(DetailsActivity.MOVIE, movie);
+            Intent intent = new Intent(getActivity(), PeliculasDetailsActivity.class);
+            intent.putExtra(PeliculasDetailsActivity.MOVIE, movie);
 
             Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     getActivity(),
                     ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                    DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
+                    PeliculasDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
             getActivity().startActivity(intent, bundle);
         } else if (item instanceof String) {
             if (((String) item).indexOf(getString(R.string.error_fragment)) >= 0) {
