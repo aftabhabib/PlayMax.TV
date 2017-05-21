@@ -35,9 +35,9 @@ public class ResultsListener implements OnItemViewClickedListener {
     Activity activity;
     Usuario user;
 
-    public ResultsListener(Activity activity){
+    public ResultsListener(Activity activity, Usuario user){
         this.activity = activity;
-        this.user = (Usuario) activity.getIntent().getSerializableExtra(MainActivity.USER);
+        this.user = user;
     }
 
     @Override

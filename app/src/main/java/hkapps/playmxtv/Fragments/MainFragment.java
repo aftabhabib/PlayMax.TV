@@ -251,7 +251,7 @@ public class MainFragment extends BrowseFragment {
             }
         });
 
-        setOnItemViewClickedListener(new ResultsListener(this.getActivity()));
+        setOnItemViewClickedListener(new ResultsListener(this.getActivity(), user));
         //setOnItemViewSelectedListener(new ItemViewSelectedListener());
     }
 

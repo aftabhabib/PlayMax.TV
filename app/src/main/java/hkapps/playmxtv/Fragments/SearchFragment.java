@@ -55,7 +55,7 @@ public class SearchFragment extends android.support.v17.leanback.app.SearchFragm
         mUser = (Usuario) getActivity().getIntent().getSerializableExtra(MainActivity.USER);
 
         setSearchResultProvider(this);
-        setOnItemViewClickedListener(new ResultsListener(this.getActivity()));
+        setOnItemViewClickedListener(new ResultsListener(this.getActivity(),mUser));
 
         if (hasPermission(getActivity(), Manifest.permission.RECORD_AUDIO)) {
             // SpeechRecognitionCallback is not required and if not provided recognition will be handled

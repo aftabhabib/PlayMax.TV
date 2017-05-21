@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -13,6 +14,7 @@ import com.android.volley.Response;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -74,19 +76,20 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
 
     }
 
-    public String getLocalIpAddress() {
+    public static String getLocalIpAddress() {
         try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) {
-                        return inetAddress.getHostAddress().toString();
+            for (Enumeration en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = (NetworkInterface) en.nextElement();
+                for (Enumeration enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = (InetAddress) enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()&&inetAddress instanceof Inet4Address) {
+                        String ipAddress=inetAddress.getHostAddress().toString();
+                        Log.e("IP address",""+ipAddress);
+                        return ipAddress;
                     }
                 }
             }
         } catch (SocketException ex) {
-            Log.e(LOG_TAG, ex.toString());
         }
         return null;
     }
