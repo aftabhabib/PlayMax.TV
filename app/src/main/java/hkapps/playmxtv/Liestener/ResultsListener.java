@@ -34,15 +34,17 @@ import hkapps.playmxtv.Static.MyUtils;
 public class ResultsListener implements OnItemViewClickedListener {
     Activity activity;
     Usuario user;
+    long episode_row_id;
 
-    public ResultsListener(Activity activity, Usuario user){
+    public ResultsListener(Activity activity, Usuario user, long episode_row_id){
         this.activity = activity;
         this.user = user;
+        this.episode_row_id = episode_row_id;
     }
 
     @Override
     public void onItemClicked(final Presenter.ViewHolder itemViewHolder, Object item,
-                              RowPresenter.ViewHolder rowViewHolder, Row row) {
+                              RowPresenter.ViewHolder rowViewHolder, final Row row) {
 
         if (item instanceof Ficha) {
             final Ficha fr = (Ficha) item;
@@ -54,7 +56,7 @@ public class ResultsListener implements OnItemViewClickedListener {
                     try {
                         fr.completeFromXML(response);
 
-                        if(fr.getIdCapitulo()!= null){
+                        if(row.getHeaderItem().getId() == episode_row_id){
                             //Si tenemos capitulo: Lanzamos el detail para capitulo
                             //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
                             Requester.request(activity,PlayMaxAPI.getInstance().requestEnlaces(user, fr, fr.getIdCapitulo()),

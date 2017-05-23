@@ -66,6 +66,8 @@ import hkapps.playmxtv.Scrapper.StreamCloudRequest;
 import hkapps.playmxtv.Services.PlayMaxAPI;
 import hkapps.playmxtv.Services.Requester;
 import hkapps.playmxtv.Static.MyUtils;
+import hkapps.playmxtv.Static.Utils;
+import hkapps.playmxtv.Views.CircleTransform;
 
 public class MainFragment extends BrowseFragment {
     private static final String TAG = "MainFragment";
@@ -73,6 +75,9 @@ public class MainFragment extends BrowseFragment {
     private static final int BACKGROUND_UPDATE_DELAY = 300;
     private static final int GRID_ITEM_WIDTH = 200;
     private static final int GRID_ITEM_HEIGHT = 200;
+
+    public static final long EPISODE_ROW_ID = 0x42;
+    private static final int AVATAR_SIZE = 250;
 
     private final Handler mHandler = new Handler();
     private ArrayObjectAdapter mRowsAdapter;
@@ -91,10 +96,11 @@ public class MainFragment extends BrowseFragment {
 
         prepareBackgroundManager();
 
-        setupUIElements();
-
         //Recuperamos el usuario
         recoverUser();
+
+        //We paint the elements
+        setupUIElements();
 
         //Creamos el adaptador
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
@@ -154,7 +160,7 @@ public class MainFragment extends BrowseFragment {
         ArrayObjectAdapter series = new ArrayObjectAdapter(cardPresenter);
         ArrayObjectAdapter peliculas = new ArrayObjectAdapter(cardPresenter);
 
-        HeaderItem hproximos = new HeaderItem("Proximos Capitulos");
+        HeaderItem hproximos = new HeaderItem(EPISODE_ROW_ID,"Proximos Capitulos");
         HeaderItem hseries = new HeaderItem("Tus Series");
         HeaderItem hpeliculas = new HeaderItem("Tus Peliculas");
 
@@ -166,9 +172,9 @@ public class MainFragment extends BrowseFragment {
                 series.add(fr);
             else peliculas.add(fr);
         }
-        if(proximos.size() > 0) mRowsAdapter.add(new ListRow(0,hproximos, proximos));
-        mRowsAdapter.add(new ListRow(1,hseries, series));
-        mRowsAdapter.add(new ListRow(2,hpeliculas, peliculas));
+        if(proximos.size() > 0) mRowsAdapter.add(new ListRow(hproximos, proximos));
+        mRowsAdapter.add(new ListRow(hseries, series));
+        mRowsAdapter.add(new ListRow(hpeliculas, peliculas));
 
         /*
         HeaderItem gridHeader = new HeaderItem(i, "PREFERENCES");
@@ -191,8 +197,8 @@ public class MainFragment extends BrowseFragment {
         ArrayObjectAdapter series = new ArrayObjectAdapter(cardPresenter);
         ArrayObjectAdapter peliculas = new ArrayObjectAdapter(cardPresenter);
 
-        HeaderItem hseries = new HeaderItem(3,"Series Recomendadas");
-        HeaderItem hpeliculas = new HeaderItem(4,"Peliculas Recomendadas");
+        HeaderItem hseries = new HeaderItem("Series Recomendadas");
+        HeaderItem hpeliculas = new HeaderItem("Peliculas Recomendadas");
 
         for(Ficha fr : fichas){
             if(fr.isSerie())
@@ -225,13 +231,32 @@ public class MainFragment extends BrowseFragment {
         mMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
     }
+    
+    void setAvatarImage(){
+        int width = Utils.convertDpToPixel(getActivity().getApplicationContext(), AVATAR_SIZE);
+        int height = Utils.convertDpToPixel(getActivity().getApplicationContext(), AVATAR_SIZE);
+        Glide.with(getActivity())
+                .load(user.getAvatar())
+                .centerCrop()
+                //.error(R.drawable.default_background)
+                .transform(new CircleTransform(this.getActivity()))
+                .into(new SimpleTarget<GlideDrawable>(width, height) {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource,
+                                                GlideAnimation<? super GlideDrawable>
+                                                        glideAnimation) {
+                        setBadgeDrawable(resource);
+                    }
+                });
+    }
 
     private void setupUIElements() {
+        setAvatarImage();
         //setBadgeDrawable(getActivity().getResources().getDrawable(R.drawable.app_icon));
         //setTitle("PlayMax.TV"); // Badge, when set, takes precedent
         // over title
-        setHeadersState(HEADERS_ENABLED);
-        //setHeadersState(HEADERS_DISABLED);
+        //setHeadersState(HEADERS_ENABLED);
+        setHeadersState(HEADERS_DISABLED);
         setHeadersTransitionOnBackEnabled(true);
 
         // set fastLane (or headers) background color
@@ -251,7 +276,7 @@ public class MainFragment extends BrowseFragment {
             }
         });
 
-        setOnItemViewClickedListener(new ResultsListener(this.getActivity(), user));
+        setOnItemViewClickedListener(new ResultsListener(this.getActivity(), user, EPISODE_ROW_ID));
         //setOnItemViewSelectedListener(new ItemViewSelectedListener());
     }
 

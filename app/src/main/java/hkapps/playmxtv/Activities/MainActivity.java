@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
 
 /*
@@ -26,6 +27,7 @@ import hkapps.playmxtv.R;
 public class MainActivity extends Activity {
     public static final String FICHA = "Ficha";
     public static final String USER = "Usuario";
+    private Usuario mUser;
 
     /**
      * Called when the activity is first created.
@@ -35,11 +37,14 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mUser = (Usuario)getIntent().getSerializableExtra(USER);
     }
 
     @Override
     public boolean onSearchRequested() {
-        startActivity(new Intent(this, SearchActivity.class));
+        Intent search = new Intent(this, SearchActivity.class);
+        search.putExtra(USER, mUser);
+        startActivity(search);
         return true;
     }
 }
