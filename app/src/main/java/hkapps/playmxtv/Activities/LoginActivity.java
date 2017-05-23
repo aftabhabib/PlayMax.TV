@@ -26,6 +26,7 @@ import hkapps.playmxtv.Services.LoginServer;
 import hkapps.playmxtv.Services.PlayMaxAPI;
 import hkapps.playmxtv.Services.Requester;
 
+
 /**
  * Created by hkfuertes on 17/05/2017.
  */
@@ -33,9 +34,10 @@ import hkapps.playmxtv.Services.Requester;
 public class LoginActivity extends Activity implements LoginServer.Listener {
 
     private static final String LOG_TAG = "LOGIN";
-    private static final String LOGIN_CREDS = "CREDENCIALES_LOGIN";
+    public static final String LOGIN_CREDS = "CREDENCIALES_LOGIN";
     private static final String USERNAME_TAG = "USERNAME_TAG";
     private static final String PASSWORD_TAG = "PASSWORD_TAG";
+    public static final String SID_TAG = "SID_TAG";
     private LoginServer loginServer;
 
     private String username;
@@ -104,6 +106,11 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
                         Usuario user = Usuario.fromXML(response);
 
                         if(user != null) {
+
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString(SID_TAG,user.getSid());
+                            editor.apply();
+
                             Intent main = new Intent(LoginActivity.this, MainActivity.class);
                             main.putExtra("user", user);
                             //main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

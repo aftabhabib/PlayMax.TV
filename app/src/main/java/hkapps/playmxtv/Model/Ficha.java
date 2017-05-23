@@ -20,7 +20,7 @@ import hkapps.playmxtv.Services.PlayMaxAPI;
  * Created by hkfuertes on 24/04/2017.
  */
 
-public class Ficha implements Serializable {
+public class Ficha implements Serializable, Cloneable {
     /* Resumida
     <Ficha>
     <Title><![CDATA[Better Call Saul]]></Title>
@@ -303,5 +303,9 @@ public class Ficha implements Serializable {
 
     public int getSeasons() {
         return Integer.parseInt(seasons);
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

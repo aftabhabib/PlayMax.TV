@@ -154,11 +154,9 @@ public class MainFragment extends BrowseFragment {
 
     private void loadMyRows(List<Ficha> fichas) {
 
-        CardPresenter cardPresenter = new CardPresenter();
-
-        ArrayObjectAdapter proximos = new ArrayObjectAdapter(cardPresenter);
-        ArrayObjectAdapter series = new ArrayObjectAdapter(cardPresenter);
-        ArrayObjectAdapter peliculas = new ArrayObjectAdapter(cardPresenter);
+        ArrayObjectAdapter proximos = new ArrayObjectAdapter(new CardPresenter());
+        ArrayObjectAdapter series = new ArrayObjectAdapter(new CardPresenter());
+        ArrayObjectAdapter peliculas = new ArrayObjectAdapter(new CardPresenter());
 
         HeaderItem hproximos = new HeaderItem(EPISODE_ROW_ID,"Proximos Capitulos");
         HeaderItem hseries = new HeaderItem("Tus Series");
@@ -166,7 +164,11 @@ public class MainFragment extends BrowseFragment {
 
         for(Ficha fr : fichas){
             if(fr.getLastEpisode() != null)
-                proximos.add(fr);
+                try {
+                    proximos.add(fr.clone());
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
 
             if(fr.isSerie())
                 series.add(fr);
@@ -192,10 +194,8 @@ public class MainFragment extends BrowseFragment {
     }
     private void loadRecomendedRows(List<Ficha> fichas) {
 
-        CardPresenter cardPresenter = new CardPresenter();
-
-        ArrayObjectAdapter series = new ArrayObjectAdapter(cardPresenter);
-        ArrayObjectAdapter peliculas = new ArrayObjectAdapter(cardPresenter);
+        ArrayObjectAdapter series = new ArrayObjectAdapter(new CardPresenter());
+        ArrayObjectAdapter peliculas = new ArrayObjectAdapter(new CardPresenter());
 
         HeaderItem hseries = new HeaderItem("Series Recomendadas");
         HeaderItem hpeliculas = new HeaderItem("Peliculas Recomendadas");

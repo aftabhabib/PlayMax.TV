@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
@@ -23,6 +24,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.List;
 
+import hkapps.playmxtv.Activities.LoginActivity;
 import hkapps.playmxtv.Activities.MainActivity;
 import hkapps.playmxtv.Activities.SearchActivity;
 import hkapps.playmxtv.Adapters.CardPresenter;
@@ -45,10 +47,15 @@ public class SearchFragment extends android.support.v17.leanback.app.SearchFragm
     private ArrayObjectAdapter mRowsAdapter;
     private boolean mResultsFound;
     private Usuario mUser;
+    private String sid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //recover sid from preferences
+        SharedPreferences prefs = this.getActivity().getSharedPreferences(LoginActivity.LOGIN_CREDS, Context.MODE_PRIVATE);
+        sid = prefs.getString(LoginActivity.SID_TAG,null);
 
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
 
@@ -124,7 +131,7 @@ public class SearchFragment extends android.support.v17.leanback.app.SearchFragm
     }
 
     private void search(String query){
-        Requester.request(this.getActivity(),PlayMaxAPI.getInstance().requestSearch(mUser, query),this);
+        Requester.request(this.getActivity(),PlayMaxAPI.getInstance().requestSearch(sid, query),this);
     }
 
     @Override

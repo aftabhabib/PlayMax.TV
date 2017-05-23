@@ -46,8 +46,11 @@ public class ResultsListener implements OnItemViewClickedListener {
     public void onItemClicked(final Presenter.ViewHolder itemViewHolder, Object item,
                               RowPresenter.ViewHolder rowViewHolder, final Row row) {
 
+        Log.d("RESULTLISTENER", "Item Clicked!");
+        Log.d("RESULTLISTENER",item.toString());
         if (item instanceof Ficha) {
             final Ficha fr = (Ficha) item;
+            Log.d("RESULTLISTENER",fr.toString());
 
             //Interfaz para peliculas
             Requester.request(activity, PlayMaxAPI.getInstance().requestFicha(user, fr), new Response.Listener<String>() {

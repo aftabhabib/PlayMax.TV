@@ -243,4 +243,26 @@ public class PlayMaxAPI {
             }
         };
     }
+    public Requester.Requestable requestSearch(final String sid,final String query){
+        return new Requester.Requestable() {
+            @Override
+            public String getUrl() {
+                return "https://playmax.mx/buscar.php" +
+                        "?apikey="+ Constants.APIKEY+
+                        "&sid="+sid+
+                        "&buscar="+query+
+                        "&modo=[fichas]";
+            }
+
+            @Override
+            public int getMethod() {
+                return Request.Method.GET;
+            }
+
+            @Override
+            public Map<String,String> getBody() {
+                return null;
+            }
+        };
+    }
 }
