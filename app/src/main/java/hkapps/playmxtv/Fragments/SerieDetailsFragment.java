@@ -15,6 +15,9 @@
 package hkapps.playmxtv.Fragments;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v17.leanback.app.BackgroundManager;
@@ -25,19 +28,25 @@ import android.support.v17.leanback.widget.BaseOnItemViewClickedListener;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.DetailsOverviewRow;
 import android.support.v17.leanback.widget.FullWidthDetailsOverviewRowPresenter;
+import android.support.v17.leanback.widget.FullWidthDetailsOverviewSharedElementHelper;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.RowPresenter;
+import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.graphics.Palette;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -46,8 +55,10 @@ import java.util.List;
 
 import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
 import hkapps.playmxtv.Activities.MainActivity;
+import hkapps.playmxtv.Activities.SerieDetailsActivity;
 import hkapps.playmxtv.Adapters.EpisodePresenter;
 import hkapps.playmxtv.Adapters.GridItemPresenter;
+import hkapps.playmxtv.Adapters.MovieDetailsOverviewLogoPresenter;
 import hkapps.playmxtv.Adapters.PeliculasDetailsDescriptionPresenter;
 import hkapps.playmxtv.Adapters.StringPresenter;
 import hkapps.playmxtv.Adapters.TemporadaPresenter;
@@ -69,7 +80,10 @@ import hkapps.playmxtv.Static.Utils;
  * LeanbackDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
  * It shows a detailed view of video and its meta plus related videos.
  */
-public class SerieDetailsFragment extends DetailsFragment implements OnActionClickedListener, BaseOnItemViewClickedListener, TemporadaPresenter.OnCapituloListener {
+public class SerieDetailsFragment extends DetailsFragment implements OnActionClickedListener,
+        BaseOnItemViewClickedListener,
+        TemporadaPresenter.OnCapituloListener,
+        Palette.PaletteAsyncListener{
     private static final String TAG = "VideoDetailsFragment";
 
     private static final int ACTION_RANDOM = 1;
@@ -84,10 +98,12 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
     private Drawable mDefaultBackground;
     private DisplayMetrics mMetrics;
     private Usuario mActiveUser;
-    private ArrayObjectAdapter mRowsAdapter;
-    private DetailsOverviewRow detailsOverview;
-    private FullWidthDetailsOverviewRowPresenter rowPresenter;
     private ArrayObjectAdapter episodeRowAdapter;
+    private FullWidthDetailsOverviewSharedElementHelper mHelper;
+    private ClassPresenterSelector mPresenterSelector;
+    private ArrayObjectAdapter mAdapter;
+    private FullWidthDetailsOverviewRowPresenter detailsPresenter;
+    private DetailsOverviewRow mainRow;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,7 +116,9 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
         mActiveUser = (Usuario) getActivity().getIntent().getSerializableExtra(MainActivity.USER);
 
         if (mSelectedShow != null) {
-            buildDetails();
+            setupAdapter();
+            setupDetailsOverviewRow();
+            addEpisodesRow();
             updateBackground(mSelectedShow.getCover());
         } else {
             Intent intent = new Intent(getActivity(), MainActivity.class);
@@ -147,15 +165,19 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
                   public void onResponse(String response) {
                       try {
                           List<Enlace> enlaces = Enlace.listFromXML(response);
-                          if(enlaces.size() > 0) {
-                              Log.d("REQ", enlaces.toString());
-                              StreamCloudRequest.getDirectUrl(SerieDetailsFragment.this.getActivity(), enlaces.get(0).toString(), new ScrapperListener() {
-                                  @Override
-                                  public void onDirectUrlObtained(String direct_url) {
-                                      MyUtils.launchMXP(getActivity(), direct_url);
-                                  }
-                              });
-                          }
+
+                          MyUtils.showLinkList(SerieDetailsFragment.this.getActivity(), enlaces, new Enlace.EnlaceListener() {
+                              @Override
+                              public void onEnlaceSelected(Enlace selected) {
+                                  StreamCloudRequest.getDirectUrl(SerieDetailsFragment.this.getActivity(), selected.getUrl(), new ScrapperListener() {
+                                      @Override
+                                      public void onDirectUrlObtained(String direct_url) {
+                                          MyUtils.launchMXP(getActivity(), direct_url);
+                                      }
+                                  });
+                              }
+                          });
+
                       } catch (Exception e) {
                           e.printStackTrace();
                       }
@@ -163,65 +185,68 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
               });
   }
 
-    private void buildDetails() {
-        ClassPresenterSelector selector = new ClassPresenterSelector();
-        // Attach your media item details presenter to the row presenter:
-        rowPresenter = new FullWidthDetailsOverviewRowPresenter(new PeliculasDetailsDescriptionPresenter(this.getActivity()));
-        rowPresenter.setBackgroundColor(getResources().getColor(R.color.selected_background));
+    private void setupAdapter() {
+        // Set detail background and style.
+        detailsPresenter =
+                new FullWidthDetailsOverviewRowPresenter(
+                        new PeliculasDetailsDescriptionPresenter());
 
-        rowPresenter.setOnActionClickedListener(this);
+        //detailsPresenter.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.selected_background));
+        detailsPresenter.setInitialState(FullWidthDetailsOverviewRowPresenter.STATE_HALF);
 
-        selector.addClassPresenter(DetailsOverviewRow.class, rowPresenter);
-        selector.addClassPresenter(ListRow.class, new ListRowPresenter());
-        mRowsAdapter = new ArrayObjectAdapter(selector);
+        // Hook up transition element.
+        mHelper = new FullWidthDetailsOverviewSharedElementHelper();
+        mHelper.setSharedElementEnterTransition(getActivity(), SerieDetailsActivity.SHARED_ELEMENT_NAME);
+        detailsPresenter.setListener(mHelper);
+        detailsPresenter.setParticipatingEntranceTransition(false);
+        prepareEntranceTransition();
 
-        detailsOverview = new DetailsOverviewRow(mSelectedShow);
-        //detailsOverview.setImageDrawable(getResources().getDrawable(R.drawable.default_background));
+        detailsPresenter.setOnActionClickedListener(this);
+
+        mPresenterSelector = new ClassPresenterSelector();
+        mPresenterSelector.addClassPresenter(DetailsOverviewRow.class, detailsPresenter);
+        mPresenterSelector.addClassPresenter(ListRow.class, new ListRowPresenter());
+        mAdapter = new ArrayObjectAdapter(mPresenterSelector);
+        setAdapter(mAdapter);
+    }
+
+    private void setupDetailsOverviewRow() {
+        mainRow = new DetailsOverviewRow(mSelectedShow);
 
         int width = Utils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_WIDTH);
         int height = Utils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_HEIGHT);
 
-
-
-        // Add images and action buttons to the details view
-        detailsOverview.addAction(new Action(ACTION_PLAY, "Reproducir"));
-        detailsOverview.addAction(new Action(ACTION_RANDOM, "Aleatorio"));
-        mRowsAdapter.add(detailsOverview);
-
-        Glide.with(getActivity())
+        Glide.with(this)
                 .load(mSelectedShow.getPoster())
-                .fitCenter()
+                .asBitmap()
+                .dontAnimate()
                 .error(R.drawable.default_background)
-                .into(new SimpleTarget<GlideDrawable>(width, height) {
+                .into(new SimpleTarget<Bitmap>(width, height) {
                     @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        Log.d(TAG, "details overview card image url ready: " + resource);
-                        detailsOverview.setImageDrawable(resource);
-                        detailsOverview.setImageScaleUpAllowed(true);
-                        mRowsAdapter.notifyArrayItemRangeChanged(0, mRowsAdapter.size());
+                    public void onResourceReady(final Bitmap resource,
+                                                GlideAnimation glideAnimation) {
+                        mainRow.setImageBitmap(getActivity(), resource);
+                        //Palette.from(resource).generate(SerieDetailsFragment.this);
+                        startEntranceTransition();
                     }
                 });
 
+        SparseArrayObjectAdapter adapter = new SparseArrayObjectAdapter();
+
+        adapter.set(ACTION_PLAY, new Action(ACTION_PLAY, "Reproducir"));
+        adapter.set(ACTION_RANDOM, new Action(ACTION_RANDOM, "Aleatorio"));
+
+        mainRow.setActionsAdapter(adapter);
+
+        mAdapter.add(mainRow);
+    }
+
+    private void addEpisodesRow(){
         List<Temporada> temps = Temporada.listFromCapitulos(mSelectedShow.getCapitulos());
         episodeRowAdapter = new ArrayObjectAdapter(new TemporadaPresenter(this));
         episodeRowAdapter.addAll(0, temps);
         HeaderItem header = new HeaderItem(0, "Capitulos");
-        mRowsAdapter.add(new ListRow(header, episodeRowAdapter));
-
-        /*
-        ListRow current;
-        for(int i = 0; i<mSelectedShow.getSeasons(); i++) {
-            List<Capitulo> temp = Capitulo.filterByTemporada(mSelectedShow.getCapitulos(),i);
-            if(temp.size() > 0){
-                episodeRowAdapter = new ArrayObjectAdapter(new EpisodePresenter(this.getActivity()));
-                episodeRowAdapter.addAll(0, temp);
-                HeaderItem header = new HeaderItem(i, "Temporada "+i);
-                current = new ListRow(header, episodeRowAdapter);
-                mRowsAdapter.add(current);
-            }
-        }
-         */
-        setAdapter(mRowsAdapter);
+        mAdapter.add(new ListRow(header, episodeRowAdapter));
     }
 
     @Override
@@ -249,6 +274,13 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
     @Override
     public void onCapituloClicked(Capitulo capitulo) {
         lanzarCapitulo(capitulo);
+    }
+
+    @Override
+    public void onGenerated(Palette palette) {
+        Log.d("SERIES_PALETTE","Palete received!: "+palette);
+        if(detailsPresenter != null && palette != null) detailsPresenter.setBackgroundColor(palette.getDarkVibrantColor(detailsPresenter.getBackgroundColor()));
+        getAdapter().notifyItemRangeChanged(0,getAdapter().size());
     }
 }
 

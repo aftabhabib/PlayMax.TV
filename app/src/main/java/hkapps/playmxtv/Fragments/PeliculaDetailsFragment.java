@@ -15,6 +15,7 @@
 package hkapps.playmxtv.Fragments;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v17.leanback.app.BackgroundManager;
@@ -24,8 +25,12 @@ import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.DetailsOverviewRow;
 import android.support.v17.leanback.widget.FullWidthDetailsOverviewRowPresenter;
+import android.support.v17.leanback.widget.FullWidthDetailsOverviewSharedElementHelper;
 import android.support.v17.leanback.widget.HeaderItem;
+import android.support.v17.leanback.widget.ListRow;
+import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnActionClickedListener;
+import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -39,6 +44,7 @@ import java.util.List;
 
 import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
 import hkapps.playmxtv.Activities.MainActivity;
+import hkapps.playmxtv.Activities.SerieDetailsActivity;
 import hkapps.playmxtv.Adapters.PeliculasDetailsDescriptionPresenter;
 import hkapps.playmxtv.Adapters.StringPresenter;
 import hkapps.playmxtv.Model.Enlace;
@@ -75,6 +81,11 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
     private ArrayObjectAdapter mRowsAdapter;
     private DetailsOverviewRow detailsOverview;
     private FullWidthDetailsOverviewRowPresenter rowPresenter;
+    private FullWidthDetailsOverviewRowPresenter detailsPresenter;
+    private FullWidthDetailsOverviewSharedElementHelper mHelper;
+    private ClassPresenterSelector mPresenterSelector;
+    private ArrayObjectAdapter mAdapter;
+    private DetailsOverviewRow mainRow;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,7 +97,8 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
         mSelectedMovie = (Ficha) getActivity().getIntent().getSerializableExtra(MainActivity.FICHA);
         mActiveUser = (Usuario) getActivity().getIntent().getSerializableExtra(MainActivity.USER);
         if (mSelectedMovie != null) {
-            buildDetails();
+            this.setupAdapter();
+            this.setupDetailsOverviewRow();
             updateBackground(mSelectedMovie.getCover());
         } else {
             Intent intent = new Intent(getActivity(), MainActivity.class);
@@ -131,15 +143,17 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
                   public void onResponse(String response) {
                       try {
                           List<Enlace> enlaces = Enlace.listFromXML(response);
-                          if(enlaces.size() > 0) {
-                              Log.d("REQ", enlaces.toString());
-                              StreamCloudRequest.getDirectUrl(PeliculaDetailsFragment.this.getActivity(), enlaces.get(0).toString(), new ScrapperListener() {
-                                  @Override
-                                  public void onDirectUrlObtained(String direct_url) {
-                                      MyUtils.launchMXP(getActivity(), direct_url);
-                                  }
-                              });
-                          }
+                          MyUtils.showLinkList(PeliculaDetailsFragment.this.getActivity(), enlaces, new Enlace.EnlaceListener() {
+                              @Override
+                              public void onEnlaceSelected(Enlace selected) {
+                                  StreamCloudRequest.getDirectUrl(PeliculaDetailsFragment.this.getActivity(), selected.getUrl(), new ScrapperListener() {
+                                      @Override
+                                      public void onDirectUrlObtained(String direct_url) {
+                                          MyUtils.launchMXP(getActivity(), direct_url);
+                                      }
+                                  });
+                              }
+                          });
                       } catch (Exception e) {
                           e.printStackTrace();
                       }
@@ -166,53 +180,60 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
                 });
     }
 
-    private void buildDetails() {
-        ClassPresenterSelector selector = new ClassPresenterSelector();
-        // Attach your media item details presenter to the row presenter:
-        rowPresenter = new FullWidthDetailsOverviewRowPresenter(new PeliculasDetailsDescriptionPresenter(this.getActivity()));
-        rowPresenter.setBackgroundColor(getResources().getColor(R.color.selected_background));
+    private void setupAdapter() {
+        // Set detail background and style.
+        detailsPresenter =
+                new FullWidthDetailsOverviewRowPresenter(
+                        new PeliculasDetailsDescriptionPresenter());
 
-        rowPresenter.setOnActionClickedListener(this);
+        //detailsPresenter.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.selected_background));
+        detailsPresenter.setInitialState(FullWidthDetailsOverviewRowPresenter.STATE_HALF);
 
-        selector.addClassPresenter(DetailsOverviewRow.class, rowPresenter);
-        //selector.addClassPresenter(ListRow.class, new ListRowPresenter());
-        mRowsAdapter = new ArrayObjectAdapter(selector);
+        // Hook up transition element.
+        mHelper = new FullWidthDetailsOverviewSharedElementHelper();
+        mHelper.setSharedElementEnterTransition(getActivity(), PeliculasDetailsActivity.SHARED_ELEMENT_NAME);
+        detailsPresenter.setListener(mHelper);
+        detailsPresenter.setParticipatingEntranceTransition(false);
+        prepareEntranceTransition();
 
-        detailsOverview = new DetailsOverviewRow(mSelectedMovie);
-        detailsOverview.setImageDrawable(getResources().getDrawable(R.drawable.default_background));
+        detailsPresenter.setOnActionClickedListener(this);
+
+        mPresenterSelector = new ClassPresenterSelector();
+        mPresenterSelector.addClassPresenter(DetailsOverviewRow.class, detailsPresenter);
+        mPresenterSelector.addClassPresenter(ListRow.class, new ListRowPresenter());
+        mAdapter = new ArrayObjectAdapter(mPresenterSelector);
+        setAdapter(mAdapter);
+    }
+
+    private void setupDetailsOverviewRow() {
+        mainRow = new DetailsOverviewRow(mSelectedMovie);
 
         int width = Utils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_WIDTH);
         int height = Utils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_HEIGHT);
 
-        Glide.with(getActivity())
+        Glide.with(this)
                 .load(mSelectedMovie.getPoster())
-                .centerCrop()
+                .asBitmap()
+                .dontAnimate()
                 .error(R.drawable.default_background)
-                .into(new SimpleTarget<GlideDrawable>(width, height) {
+                .into(new SimpleTarget<Bitmap>(width, height) {
                     @Override
-                    public void onResourceReady(GlideDrawable resource,
-                                                GlideAnimation<? super GlideDrawable>
-                                                        glideAnimation) {
-                        Log.d(TAG, "details overview card image url ready: " + resource);
-                        detailsOverview.setImageDrawable(resource);
-                        mRowsAdapter.notifyArrayItemRangeChanged(0, mRowsAdapter.size());
+                    public void onResourceReady(final Bitmap resource,
+                                                GlideAnimation glideAnimation) {
+                        mainRow.setImageBitmap(getActivity(), resource);
+                        //Palette.from(resource).generate(SerieDetailsFragment.this);
+                        startEntranceTransition();
                     }
                 });
 
-        // Add images and action buttons to the details view
-        detailsOverview.addAction(new Action(ACTION_PLAY, "Reproducir"));
-        detailsOverview.addAction(new Action(ACTION_WATCH_TRAILER, "Trailer"));
-        mRowsAdapter.add(detailsOverview);
+        SparseArrayObjectAdapter adapter = new SparseArrayObjectAdapter();
 
-        // Add a Related items row
-        ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(new StringPresenter());
-        listRowAdapter.add("Media Item 1");
-        listRowAdapter.add("Media Item 2");
-        listRowAdapter.add("Media Item 3");
-        HeaderItem header = new HeaderItem(0, "Related Items");
-        //mRowsAdapter.add(new ListRow(header, listRowAdapter));
+        adapter.set(ACTION_PLAY, new Action(ACTION_PLAY, "Reproducir"));
+        adapter.set(ACTION_WATCH_TRAILER, new Action(ACTION_WATCH_TRAILER, "Trailer"));
 
-        setAdapter(mRowsAdapter);
+        mainRow.setActionsAdapter(adapter);
+
+        mAdapter.add(mainRow);
     }
 
     @Override

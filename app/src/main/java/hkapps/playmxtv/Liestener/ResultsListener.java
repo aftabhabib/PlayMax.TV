@@ -21,6 +21,7 @@ import hkapps.playmxtv.Activities.MainActivity;
 import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
 import hkapps.playmxtv.Activities.SerieDetailsActivity;
 import hkapps.playmxtv.Fragments.MainFragment;
+import hkapps.playmxtv.Fragments.PeliculaDetailsFragment;
 import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
 import hkapps.playmxtv.Model.Usuario;
@@ -68,15 +69,17 @@ public class ResultsListener implements OnItemViewClickedListener {
                                         public void onResponse(String response) {
                                             try {
                                                 List<Enlace> enlaces = Enlace.listFromXML(response);
-                                                if(enlaces.size() > 0) {
-                                                    Log.d("REQ", enlaces.toString());
-                                                    StreamCloudRequest.getDirectUrl(activity, enlaces.get(0).toString(), new ScrapperListener() {
-                                                        @Override
-                                                        public void onDirectUrlObtained(String direct_url) {
-                                                            MyUtils.launchMXP(activity, direct_url);
-                                                        }
-                                                    });
-                                                }
+                                                MyUtils.showLinkList(activity, enlaces, new Enlace.EnlaceListener() {
+                                                    @Override
+                                                    public void onEnlaceSelected(Enlace selected) {
+                                                        StreamCloudRequest.getDirectUrl(activity, selected.getUrl(), new ScrapperListener() {
+                                                            @Override
+                                                            public void onDirectUrlObtained(String direct_url) {
+                                                                MyUtils.launchMXP(activity, direct_url);
+                                                            }
+                                                        });
+                                                    }
+                                                });
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }

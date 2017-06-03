@@ -18,6 +18,9 @@ import hkapps.playmxtv.Services.PlayMaxAPI;
  */
 
 public class Enlace implements Serializable{
+    public String getUrl() {
+        return this.urls[0];
+    }
     /*
     <Item>
         <Id>642439</Id>
@@ -40,6 +43,10 @@ public class Enlace implements Serializable{
         <AddedAvatar>https://playmax.mx/download/file.php?avatar=8009_1368759049.jpg</AddedAvatar>
     </Item>
      */
+
+    public interface EnlaceListener{
+        void onEnlaceSelected(Enlace selected);
+    }
 
     String host;
     String lang,sub;
@@ -130,4 +137,11 @@ public class Enlace implements Serializable{
         return this.urls[0];
     }
 
+    public String getIdioma() {
+        return this.lang;
+    }
+
+    public String getCalidad() {
+        return this.quality;
+    }
 }

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PlayMX.TV.iml" filepath="$PROJECT_DIR$/PlayMX.TV.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PlayMax.TV.iml" filepath="$PROJECT_DIR$/PlayMax.TV.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

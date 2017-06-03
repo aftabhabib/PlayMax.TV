@@ -16,10 +16,16 @@ package hkapps.playmxtv.Adapters;
 
 import android.content.Context;
 import android.support.v17.leanback.widget.Presenter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import org.w3c.dom.Text;
 
@@ -28,15 +34,10 @@ import hkapps.playmxtv.R;
 
 public class PeliculasDetailsDescriptionPresenter extends Presenter {
 
-    private final Context mContext;
-
-    public PeliculasDetailsDescriptionPresenter(Context mContext){
-        this.mContext = mContext;
-    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.peliculas_details_description, null);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.peliculas_details_description, null);
         return new PeliculasDetailViewHolder(view);
     }
 
