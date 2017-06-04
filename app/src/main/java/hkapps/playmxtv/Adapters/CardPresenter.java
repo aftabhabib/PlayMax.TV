@@ -36,7 +36,6 @@ public class CardPresenter extends Presenter {
     private static final int CARD_HEIGHT = 450;
     private static int sSelectedBackgroundColor;
     private static int sDefaultBackgroundColor;
-    private Drawable mDefaultCardImage;
 
     private static void updateCardBackgroundColor(ImageCardView view, boolean selected) {
         int color = selected ? sSelectedBackgroundColor : sDefaultBackgroundColor;
@@ -52,7 +51,6 @@ public class CardPresenter extends Presenter {
 
         sDefaultBackgroundColor = parent.getResources().getColor(R.color.default_background);
         sSelectedBackgroundColor = parent.getResources().getColor(R.color.selected_background);
-        mDefaultCardImage = parent.getResources().getDrawable(R.drawable.movie);
 
         ImageCardView cardView = new ImageCardView(parent.getContext()) {
             @Override
@@ -80,7 +78,7 @@ public class CardPresenter extends Presenter {
             Glide.with(viewHolder.view.getContext())
                     .load(fr.getPoster())
                     .centerCrop()
-                    .error(mDefaultCardImage)
+                    //.error(mDefaultCardImage)
                     .into(cardView.getMainImageView());
         }
 

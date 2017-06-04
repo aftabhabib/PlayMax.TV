@@ -2,6 +2,10 @@ package hkapps.playmxtv.Liestener;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
@@ -9,6 +13,7 @@ import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -47,10 +52,13 @@ public class ResultsListener implements OnItemViewClickedListener {
     public void onItemClicked(final Presenter.ViewHolder itemViewHolder, Object item,
                               RowPresenter.ViewHolder rowViewHolder, final Row row) {
 
+        Bitmap bitmap = MyUtils.drawableToBitmap(((ImageCardView) itemViewHolder.view).getMainImage());
+
         Log.d("RESULTLISTENER", "Item Clicked!");
         Log.d("RESULTLISTENER",item.toString());
         if (item instanceof Ficha) {
             final Ficha fr = (Ficha) item;
+            final Palette palette = Palette.from(bitmap).generate();
             Log.d("RESULTLISTENER",fr.toString());
 
             //Interfaz para peliculas
@@ -90,6 +98,8 @@ public class ResultsListener implements OnItemViewClickedListener {
                             Intent intent = new Intent(activity, SerieDetailsActivity.class);
                             intent.putExtra(MainActivity.FICHA, fr);
                             intent.putExtra(MainActivity.USER, user);
+                            intent.putExtra(MainActivity.PALETTE_VIBRANT_DARK, palette.getDarkVibrantColor(Color.BLACK));
+                            intent.putExtra(MainActivity.PALETTE_MUTED_DARK, palette.getDarkVibrantColor(Color.BLACK));
 
                             Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     activity,
@@ -101,6 +111,9 @@ public class ResultsListener implements OnItemViewClickedListener {
                             Intent intent = new Intent(activity, PeliculasDetailsActivity.class);
                             intent.putExtra(MainActivity.FICHA, fr);
                             intent.putExtra(MainActivity.USER, user);
+                            intent.putExtra(MainActivity.PALETTE_VIBRANT_DARK, palette.getDarkVibrantColor(Color.BLACK));
+                            intent.putExtra(MainActivity.PALETTE_MUTED_DARK, palette.getDarkVibrantColor(Color.BLACK));
+
 
                             Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     activity,

@@ -81,9 +81,7 @@ import hkapps.playmxtv.Static.Utils;
  * It shows a detailed view of video and its meta plus related videos.
  */
 public class SerieDetailsFragment extends DetailsFragment implements OnActionClickedListener,
-        BaseOnItemViewClickedListener,
-        TemporadaPresenter.OnCapituloListener,
-        Palette.PaletteAsyncListener{
+        TemporadaPresenter.OnCapituloListener{
     private static final String TAG = "VideoDetailsFragment";
 
     private static final int ACTION_RANDOM = 1;
@@ -125,7 +123,7 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
             startActivity(intent);
         }
 
-        setOnItemViewClickedListener(this);
+        //setOnItemViewClickedListener(this);
     }
 
     @Override
@@ -156,7 +154,7 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
     }
 
 
-  private void lanzarCapitulo(Capitulo episode){
+  private void lanzarCapitulo(final Capitulo episode){
       //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
       Requester.request(SerieDetailsFragment.this.getActivity(),
               PlayMaxAPI.getInstance().requestEnlaces(mActiveUser, mSelectedShow, episode.getIdCapitulo()),
@@ -171,8 +169,15 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
                               public void onEnlaceSelected(Enlace selected) {
                                   StreamCloudRequest.getDirectUrl(SerieDetailsFragment.this.getActivity(), selected.getUrl(), new ScrapperListener() {
                                       @Override
-                                      public void onDirectUrlObtained(String direct_url) {
-                                          MyUtils.launchMXP(getActivity(), direct_url);
+                                      public void onDirectUrlObtained(final String direct_url) {
+                                          //Marcar como visto
+                                          Requester.request(SerieDetailsFragment.this.getActivity(),
+                                                  PlayMaxAPI.getInstance().requestMarkAsViewed(mActiveUser.getSid(), episode.getIdCapitulo()), new Response.Listener<String>() {
+                                                      @Override
+                                                      public void onResponse(String response) {
+                                                          MyUtils.launchMXP(getActivity(), direct_url);
+                                                      }
+                                                  });
                                       }
                                   });
                               }
@@ -191,7 +196,9 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
                 new FullWidthDetailsOverviewRowPresenter(
                         new PeliculasDetailsDescriptionPresenter());
 
-        //detailsPresenter.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.selected_background));
+        int color = getActivity().getIntent().getIntExtra(MainActivity.PALETTE_MUTED_DARK, -1);
+        if(color > 0)
+            detailsPresenter.setBackgroundColor(color);
         detailsPresenter.setInitialState(FullWidthDetailsOverviewRowPresenter.STATE_HALF);
 
         // Hook up transition element.
@@ -233,7 +240,7 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
 
         SparseArrayObjectAdapter adapter = new SparseArrayObjectAdapter();
 
-        adapter.set(ACTION_PLAY, new Action(ACTION_PLAY, "Reproducir"));
+        adapter.set(ACTION_PLAY, new Action(ACTION_PLAY, "Siguiente"));
         adapter.set(ACTION_RANDOM, new Action(ACTION_RANDOM, "Aleatorio"));
 
         mainRow.setActionsAdapter(adapter);
@@ -252,36 +259,18 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
     @Override
     public void onActionClicked(Action action) {
         if (action.getId() == ACTION_PLAY){
-            //lanzarPelicula();
+            lanzarCapitulo(Capitulo.findFirstNonViewed(mSelectedShow.getCapitulos()));
         }else if(action.getId() == ACTION_RANDOM){
             lanzarCapitulo(Capitulo.random(mSelectedShow.getCapitulos()));
         }
     }
 
-    @Override
-    public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Object row) {
-        if(item instanceof Action){
-            Action action = (Action) item;
-            if (action.getId() == ACTION_PLAY){
-                //lanzarPelicula();
-            }else if(action.getId() == ACTION_RANDOM){
-                lanzarCapitulo(Capitulo.random(mSelectedShow.getCapitulos()));
-            }
-        }
-
-    }
 
     @Override
     public void onCapituloClicked(Capitulo capitulo) {
         lanzarCapitulo(capitulo);
     }
 
-    @Override
-    public void onGenerated(Palette palette) {
-        Log.d("SERIES_PALETTE","Palete received!: "+palette);
-        if(detailsPresenter != null && palette != null) detailsPresenter.setBackgroundColor(palette.getDarkVibrantColor(detailsPresenter.getBackgroundColor()));
-        getAdapter().notifyItemRangeChanged(0,getAdapter().size());
-    }
 }
 
 

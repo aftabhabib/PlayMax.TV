@@ -7,6 +7,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -47,21 +51,49 @@ public class MyUtils {
     }
 
     public static void showLinkList(Context mContext, final List<Enlace> enlaces, final Enlace.EnlaceListener listener){
-        Dialog dialog = new Dialog(mContext);
-        final EnlacesAdapter enlacesAdapter = new EnlacesAdapter(enlaces);
 
-        //Prepare ListView in dialog
-        ListView dialog_ListView = new ListView(dialog.getContext());
-        dialog_ListView.setAdapter(enlacesAdapter);
-        dialog_ListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+        if(!enlaces.isEmpty()) {
+            Dialog dialog = new Dialog(mContext);
+            final EnlacesAdapter enlacesAdapter = new EnlacesAdapter(enlaces);
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                listener.onEnlaceSelected(enlacesAdapter.getItem(position));
-            }});
+            //Prepare ListView in dialog
+            ListView dialog_ListView = new ListView(dialog.getContext());
+            dialog_ListView.setAdapter(enlacesAdapter);
+            dialog_ListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-        dialog.setContentView(dialog_ListView);
-        dialog.create();
-        dialog.show();
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    listener.onEnlaceSelected(enlacesAdapter.getItem(position));
+                }
+            });
+
+            dialog.setContentView(dialog_ListView);
+            dialog.create();
+            dialog.show();
+        }else{
+            Toast.makeText(mContext,"No hay enlaces disponibles!",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static Bitmap drawableToBitmap (Drawable drawable) {
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if(bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+
+        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 }

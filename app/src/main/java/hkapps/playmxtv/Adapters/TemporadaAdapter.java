@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import hkapps.playmxtv.Model.Capitulo;
@@ -52,16 +53,20 @@ public class TemporadaAdapter extends BaseAdapter {
 
         holder.nombre.setText(getItem(position).getNombre());
         holder.numero.setText(getItem(position).getNum()+"");
+        if(!getItem(position).isWatched())
+            holder.visto.setVisibility(View.INVISIBLE);
 
         return convertView;
     }
 
     private class ViewHolder{
         public TextView nombre, numero;
+        public ImageView visto;
 
         public ViewHolder(View view){
             nombre = (TextView) view.findViewById(R.id.episode_name);
             numero = (TextView) view.findViewById(R.id.episode_number);
+            visto = (ImageView) view.findViewById(R.id.episode_watched);
         }
     }
 }

@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -166,6 +167,26 @@ public class Capitulo implements Serializable,Comparable<Capitulo> {
 
     @Override
     public int compareTo(@NonNull Capitulo o) {
-        return Integer.compare(num_capitulo, o.num_capitulo);
+        if(this.temporada == o.getTemporada())
+            return Integer.compare(num_capitulo, o.num_capitulo);
+        else
+            return  Integer.compare(temporada, o.getTemporada());
+    }
+
+    public boolean isWatched() {
+        return this.viewed.equals(PlayMaxAPI.EPISODE_VIEWED_YES);
+    }
+
+    public static Capitulo findFirstNonViewed(List<Capitulo> capitulos){
+        Collections.sort(capitulos);
+
+        Iterator<Capitulo> itCap = capitulos.iterator();
+
+        Capitulo current = null;
+        while(itCap.hasNext() && (current = itCap.next()).isWatched());
+
+        if(current != null){
+            return capitulos.get(capitulos.indexOf(current) + 1);
+        }else return null;
     }
 }

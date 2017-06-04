@@ -16,9 +16,19 @@
 
     <TextView
         android:layout_toRightOf="@+id/episode_number"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/episode_name"
         android:text="nombre"
-        android:padding="20dp"/>
+        android:padding="20dp"
+        android:layout_toLeftOf="@+id/episode_watched" />
+
+    <ImageView
+        android:layout_alignParentEnd="true"
+        android:layout_width="40dp"
+        android:layout_marginRight="10dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/episode_watched"
+        android:src="@drawable/marked_v4_white"
+        android:layout_alignBottom="@+id/episode_name" />
 </RelativeLayout>

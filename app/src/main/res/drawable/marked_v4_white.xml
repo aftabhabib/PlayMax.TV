@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="72dp"
+    android:height="72dp"
+    android:viewportWidth="72"
+    android:viewportHeight="72">
+
+    <path
+        android:fillColor="#ffffff"
+        android:fillType="evenOdd"
+        android:strokeColor="#000000"
+        android:pathData="M 72.00,36.00 C 72.00,36.00 60.00,60.00 36.00,60.00 12.00,60.00 -0.00,36.00
+-0.00,36.00 -0.00,36.00 12.00,12.00 36.00,12.00 60.00,12.00 72.00,36.00
+72.00,36.00 Z M 62.00,36.00 C 62.00,36.00 54.00,19.00 36.00,19.00 18.00,19.00
+10.00,36.00 10.00,36.00 10.00,36.00 18.00,53.00 36.00,53.00 54.00,53.00
+62.00,36.00 62.00,36.00 Z" />
+    <path
+        android:fillColor="#ffffff"
+        android:fillType="evenOdd"
+        android:strokeColor="#000000"
+        android:pathData="M 46.00,36.00 C 46.00,30.50 41.50,26.00 36.00,26.00 30.50,26.00 26.00,30.50
+26.00,36.00 26.00,41.50 30.50,46.00 36.00,46.00 41.50,46.00 46.00,41.50
+46.00,36.00 46.00,36.00 46.00,36.00 46.00,36.00 Z" />
+</vector>

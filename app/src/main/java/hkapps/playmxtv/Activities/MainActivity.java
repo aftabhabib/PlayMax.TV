@@ -27,6 +27,10 @@ import hkapps.playmxtv.R;
 public class MainActivity extends Activity {
     public static final String FICHA = "Ficha";
     public static final String USER = "Usuario";
+    public static final String PALETTE = "Palette";
+    public static final String PALETTE_VIBRANT = "PALETTE_VIBRANT";
+    public static final String PALETTE_VIBRANT_DARK = "PALETTE_VIBRANT_DARK";
+    public static final String PALETTE_MUTED_DARK = "PALETTE_MUTED_DARK";
     private Usuario mUser;
 
     /**

@@ -62,6 +62,9 @@ public class PlayMaxAPI {
     public static final String ID_CAPITULO_NEW_TAG = "EpisodeID";
     public static final String ONLINE_TAG = "Online";
 
+    public static final String EPISODE_VIEWED_YES = "yes";
+    public static final String EPISODE_VIEWED_NO = "no";
+
     private PlayMaxAPI(){
 
     }
@@ -252,6 +255,28 @@ public class PlayMaxAPI {
                         "&sid="+sid+
                         "&buscar="+query+
                         "&modo=[fichas]";
+            }
+
+            @Override
+            public int getMethod() {
+                return Request.Method.GET;
+            }
+
+            @Override
+            public Map<String,String> getBody() {
+                return null;
+            }
+        };
+    }
+
+    public Requester.Requestable requestMarkAsViewed(final String sid, final String c_id){
+        return new Requester.Requestable() {
+            @Override
+            public String getUrl() {
+                return "https://playmax.mx/data.php?mode=capitulo_visto" +
+                        "?apikey="+ Constants.APIKEY+
+                        "&sid="+sid+
+                        "&c_id="+c_id;
             }
 
             @Override
