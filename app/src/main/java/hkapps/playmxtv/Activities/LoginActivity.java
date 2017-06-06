@@ -47,11 +47,15 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
     TextView ip_address;
 
     private static final int PORT = 8080;
+    private TextView status;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        status = (TextView) findViewById(R.id.login_status);
+        status.setText(R.string.login_getting_settings);
 
         ip_address = (TextView) findViewById(R.id.login_ip_address);
         ip_address.setText("http://"+getLocalIpAddress()+":"+PORT);
@@ -61,6 +65,7 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
         password = prefs.getString(PASSWORD_TAG,null);
 
         if(username == null || password == null){
+            status.setText(R.string.login_settings_not_found_starting);
             //Servidor
             loginServer = new LoginServer(this, PORT, this);
 
@@ -71,6 +76,7 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
                 e.printStackTrace();
             }
         }else{
+
             loginUser(username,password);
         }
 
@@ -97,6 +103,7 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
     }
 
     private void loginUser(String username, String password){
+        status.setText(R.string.login_request);
         try {
             Requester.request(this, PlayMaxAPI.getInstance().requestLogin(username,password),new Response.Listener<String>(){
 
@@ -144,6 +151,8 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
 
     @Override
     public void onResponse(String username, String password) {
+
+        status.setText(R.string.login_received_from_server);
 
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(USERNAME_TAG,username);

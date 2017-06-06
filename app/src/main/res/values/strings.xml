@@ -40,4 +40,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_instructions">Por favor, vaya a un navegador (dentro de la misma wifi) y escriba la siguiente dirección para conectar el televisor</string>
+    <string name="status"><![CDATA[<status>]]></string>
+    <string name="login_getting_settings">Recuperando credenciales guardadas...</string>
+    <string name="login_settings_not_found_starting">Credenciales no encontradas, iniciando servidor...</string>
+    <string name="login_request">Iniciando sesion...</string>
+    <string name="login_received_from_server">¡Credenciales recividas con exito!</string>
+    <string name="login_esperando">Esperando...</string>
 </resources>
