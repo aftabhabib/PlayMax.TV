@@ -196,9 +196,7 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
                 new FullWidthDetailsOverviewRowPresenter(
                         new PeliculasDetailsDescriptionPresenter());
 
-        int color = getActivity().getIntent().getIntExtra(MainActivity.PALETTE_MUTED_DARK, -1);
-        if(color > 0)
-            detailsPresenter.setBackgroundColor(color);
+        //detailsPresenter.setBackgroundColor(color);
         detailsPresenter.setInitialState(FullWidthDetailsOverviewRowPresenter.STATE_HALF);
 
         // Hook up transition element.

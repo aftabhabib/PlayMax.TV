@@ -77,6 +77,11 @@ public class MainFragment extends BrowseFragment {
     private static final int GRID_ITEM_HEIGHT = 200;
 
     public static final long EPISODE_ROW_ID = 0x42;
+    public static final long SHOWS_ROW_ID = 0x43;
+    public static final long MOVIES_ROW_ID = 0x44;
+    public static final long RECOMENDED_MOVIES_ROW_ID = 0x45;
+    public static final long RECOMENDED_SHOW_ROW_ID = 0x46;
+    public static final long SETTINGS_ROW_ID = 0x47;
     private static final int AVATAR_SIZE = 250;
 
     private final Handler mHandler = new Handler();
@@ -105,6 +110,7 @@ public class MainFragment extends BrowseFragment {
         //Creamos el adaptador
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
 
+        //Anidadas para matener el orden
         //Pedimos las series
         Requester.request(getActivity(), PlayMaxAPI.getInstance().requestSumary(user), new Response.Listener<String>() {
             @Override
@@ -114,25 +120,35 @@ public class MainFragment extends BrowseFragment {
                     Log.d("REQ",fichas.toString());
 
                     loadMyRows(fichas);
+
+
+                    Requester.request(getActivity(), PlayMaxAPI.getInstance().requestCatalogue(user), new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                List<Ficha> fichas = Ficha.listFromXML(response);
+                                Log.d("REQ",fichas.toString());
+
+                                loadRecomendedRows(fichas);
+                                //Load Settings
+                                //loadSettings();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
-        Requester.request(getActivity(), PlayMaxAPI.getInstance().requestCatalogue(user), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    List<Ficha> fichas = Ficha.listFromXML(response);
-                    Log.d("REQ",fichas.toString());
 
-                    loadRecomendedRows(fichas);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
+
+        //Load Settings
+        //loadSettings();
         setupEventListeners();
     }
 
@@ -159,8 +175,8 @@ public class MainFragment extends BrowseFragment {
         ArrayObjectAdapter peliculas = new ArrayObjectAdapter(new CardPresenter());
 
         HeaderItem hproximos = new HeaderItem(EPISODE_ROW_ID,"Proximos Capitulos");
-        HeaderItem hseries = new HeaderItem("Tus Series");
-        HeaderItem hpeliculas = new HeaderItem("Tus Peliculas");
+        HeaderItem hseries = new HeaderItem(SHOWS_ROW_ID,"Tus Series");
+        HeaderItem hpeliculas = new HeaderItem(MOVIES_ROW_ID,"Tus Peliculas");
 
         for(Ficha fr : fichas){
             if(fr.getLastEpisode() != null)
@@ -178,17 +194,6 @@ public class MainFragment extends BrowseFragment {
         mRowsAdapter.add(new ListRow(hseries, series));
         mRowsAdapter.add(new ListRow(hpeliculas, peliculas));
 
-        /*
-        HeaderItem gridHeader = new HeaderItem(i, "PREFERENCES");
-
-        GridItemPresenter mGridPresenter = new GridItemPresenter();
-        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
-        gridRowAdapter.add(getResources().getString(R.string.grid_view));
-        gridRowAdapter.add(getString(R.string.error_fragment));
-        gridRowAdapter.add(getResources().getString(R.string.personal_settings));
-        mRowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));
-
-        */
         setAdapter(mRowsAdapter);
 
     }
@@ -197,8 +202,8 @@ public class MainFragment extends BrowseFragment {
         ArrayObjectAdapter series = new ArrayObjectAdapter(new CardPresenter());
         ArrayObjectAdapter peliculas = new ArrayObjectAdapter(new CardPresenter());
 
-        HeaderItem hseries = new HeaderItem("Series Recomendadas");
-        HeaderItem hpeliculas = new HeaderItem("Peliculas Recomendadas");
+        HeaderItem hseries = new HeaderItem(RECOMENDED_SHOW_ROW_ID,"Series");
+        HeaderItem hpeliculas = new HeaderItem(RECOMENDED_MOVIES_ROW_ID,"Peliculas");
 
         for(Ficha fr : fichas){
             if(fr.isSerie())
@@ -208,19 +213,19 @@ public class MainFragment extends BrowseFragment {
         mRowsAdapter.add(new ListRow(hseries, series));
         mRowsAdapter.add(new ListRow(hpeliculas, peliculas));
 
-        /*
-        HeaderItem gridHeader = new HeaderItem(i, "PREFERENCES");
+        setAdapter(mRowsAdapter);
+
+    }
+
+    private void loadSettings(){
+        HeaderItem gridHeader = new HeaderItem(SETTINGS_ROW_ID,"Ajustes");
 
         GridItemPresenter mGridPresenter = new GridItemPresenter();
         ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
-        gridRowAdapter.add(getResources().getString(R.string.grid_view));
-        gridRowAdapter.add(getString(R.string.error_fragment));
-        gridRowAdapter.add(getResources().getString(R.string.personal_settings));
+        gridRowAdapter.add(getResources().getString(R.string.logout));
+        //gridRowAdapter.add(getString(R.string.error_fragment));
+        //gridRowAdapter.add(getResources().getString(R.string.personal_settings));
         mRowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));
-
-        */
-        setAdapter(mRowsAdapter);
-
     }
 
     private void prepareBackgroundManager() {
@@ -255,8 +260,8 @@ public class MainFragment extends BrowseFragment {
         //setBadgeDrawable(getActivity().getResources().getDrawable(R.drawable.app_icon));
         //setTitle("PlayMax.TV"); // Badge, when set, takes precedent
         // over title
-        //setHeadersState(HEADERS_ENABLED);
-        setHeadersState(HEADERS_DISABLED);
+        setHeadersState(HEADERS_ENABLED);
+        //setHeadersState(HEADERS_DISABLED);
         setHeadersTransitionOnBackEnabled(true);
 
         // set fastLane (or headers) background color
@@ -276,7 +281,7 @@ public class MainFragment extends BrowseFragment {
             }
         });
 
-        setOnItemViewClickedListener(new ResultsListener(this.getActivity(), user, EPISODE_ROW_ID));
+        setOnItemViewClickedListener(new ResultsListener(this.getActivity(), user));
         //setOnItemViewSelectedListener(new ItemViewSelectedListener());
     }
 

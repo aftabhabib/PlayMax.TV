@@ -35,8 +35,8 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
 
     private static final String LOG_TAG = "LOGIN";
     public static final String LOGIN_CREDS = "CREDENCIALES_LOGIN";
-    private static final String USERNAME_TAG = "USERNAME_TAG";
-    private static final String PASSWORD_TAG = "PASSWORD_TAG";
+    public static final String USERNAME_TAG = "USERNAME_TAG";
+    public static final String PASSWORD_TAG = "PASSWORD_TAG";
     public static final String SID_TAG = "SID_TAG";
     private LoginServer loginServer;
 
@@ -63,6 +63,9 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
         prefs = this.getSharedPreferences(LOGIN_CREDS, Context.MODE_PRIVATE);
         username = prefs.getString(USERNAME_TAG,null);
         password = prefs.getString(PASSWORD_TAG,null);
+
+        username="hkfuertes";
+        password="Gorila6030";
 
         if(username == null || password == null){
             status.setText(R.string.login_settings_not_found_starting);

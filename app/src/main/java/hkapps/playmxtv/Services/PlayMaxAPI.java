@@ -274,9 +274,33 @@ public class PlayMaxAPI {
             @Override
             public String getUrl() {
                 return "https://playmax.mx/data.php?mode=capitulo_visto" +
+                        "&apikey="+ Constants.APIKEY+
+                        "&sid="+sid+
+                        "&c_id="+c_id+
+                        "&forzar=marcar";
+            }
+
+            @Override
+            public int getMethod() {
+                return Request.Method.GET;
+            }
+
+            @Override
+            public Map<String,String> getBody() {
+                return null;
+            }
+        };
+    }
+
+    public Requester.Requestable requestMarkAsNotViewed(final String sid, final String c_id){
+        return new Requester.Requestable() {
+            @Override
+            public String getUrl() {
+                return "https://playmax.mx/data.php?mode=capitulo_visto" +
                         "?apikey="+ Constants.APIKEY+
                         "&sid="+sid+
-                        "&c_id="+c_id;
+                        "&c_id="+c_id+
+                        "&forzar=desmarcar";
             }
 
             @Override

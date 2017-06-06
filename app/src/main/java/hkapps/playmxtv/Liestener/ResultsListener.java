@@ -1,11 +1,11 @@
 package hkapps.playmxtv.Liestener;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
@@ -15,22 +15,19 @@ import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.graphics.Palette;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 
 import java.util.List;
 
-import hkapps.playmxtv.Activities.BrowseErrorActivity;
+import hkapps.playmxtv.Activities.LoginActivity;
 import hkapps.playmxtv.Activities.MainActivity;
 import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
 import hkapps.playmxtv.Activities.SerieDetailsActivity;
 import hkapps.playmxtv.Fragments.MainFragment;
-import hkapps.playmxtv.Fragments.PeliculaDetailsFragment;
 import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
 import hkapps.playmxtv.Model.Usuario;
-import hkapps.playmxtv.R;
 import hkapps.playmxtv.Scrapper.ScrapperListener;
 import hkapps.playmxtv.Scrapper.StreamCloudRequest;
 import hkapps.playmxtv.Services.PlayMaxAPI;
@@ -42,7 +39,7 @@ public class ResultsListener implements OnItemViewClickedListener {
     Usuario user;
     long episode_row_id;
 
-    public ResultsListener(Activity activity, Usuario user, long episode_row_id){
+    public ResultsListener(Activity activity, Usuario user){
         this.activity = activity;
         this.user = user;
         this.episode_row_id = episode_row_id;
@@ -58,7 +55,6 @@ public class ResultsListener implements OnItemViewClickedListener {
         Log.d("RESULTLISTENER",item.toString());
         if (item instanceof Ficha) {
             final Ficha fr = (Ficha) item;
-            final Palette palette = Palette.from(bitmap).generate();
             Log.d("RESULTLISTENER",fr.toString());
 
             //Interfaz para peliculas
@@ -68,7 +64,7 @@ public class ResultsListener implements OnItemViewClickedListener {
                     try {
                         fr.completeFromXML(response);
 
-                        if(row.getHeaderItem().getId() == episode_row_id){
+                        if(row.getHeaderItem().getId() == MainFragment.EPISODE_ROW_ID){
                             //Si tenemos capitulo: Lanzamos el detail para capitulo
                             //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
                             Requester.request(activity,PlayMaxAPI.getInstance().requestEnlaces(user, fr, fr.getIdCapitulo()),
@@ -98,8 +94,6 @@ public class ResultsListener implements OnItemViewClickedListener {
                             Intent intent = new Intent(activity, SerieDetailsActivity.class);
                             intent.putExtra(MainActivity.FICHA, fr);
                             intent.putExtra(MainActivity.USER, user);
-                            intent.putExtra(MainActivity.PALETTE_VIBRANT_DARK, palette.getDarkVibrantColor(Color.BLACK));
-                            intent.putExtra(MainActivity.PALETTE_MUTED_DARK, palette.getDarkVibrantColor(Color.BLACK));
 
                             Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     activity,
@@ -111,8 +105,6 @@ public class ResultsListener implements OnItemViewClickedListener {
                             Intent intent = new Intent(activity, PeliculasDetailsActivity.class);
                             intent.putExtra(MainActivity.FICHA, fr);
                             intent.putExtra(MainActivity.USER, user);
-                            intent.putExtra(MainActivity.PALETTE_VIBRANT_DARK, palette.getDarkVibrantColor(Color.BLACK));
-                            intent.putExtra(MainActivity.PALETTE_MUTED_DARK, palette.getDarkVibrantColor(Color.BLACK));
 
 
                             Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -129,13 +121,12 @@ public class ResultsListener implements OnItemViewClickedListener {
 
 
         } else if (item instanceof String) {
-            if (((String) item).indexOf(activity.getString(R.string.error_fragment)) >= 0) {
-                Intent intent = new Intent(activity, BrowseErrorActivity.class);
-                activity.startActivity(intent);
-            } else {
-                Toast.makeText(activity, ((String) item), Toast.LENGTH_SHORT)
-                        .show();
-            }
+            //Close session
+            SharedPreferences prefs = itemViewHolder.view.getContext().getSharedPreferences(LoginActivity.LOGIN_CREDS, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.remove(LoginActivity.USERNAME_TAG);
+            editor.remove(LoginActivity.PASSWORD_TAG);
+            editor.apply();
         }
     }
 }
