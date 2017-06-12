@@ -26,7 +26,6 @@ import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.DetailsOverviewRow;
 import android.support.v17.leanback.widget.FullWidthDetailsOverviewRowPresenter;
 import android.support.v17.leanback.widget.FullWidthDetailsOverviewSharedElementHelper;
-import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnActionClickedListener;
@@ -44,9 +43,7 @@ import java.util.List;
 
 import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
 import hkapps.playmxtv.Activities.MainActivity;
-import hkapps.playmxtv.Activities.SerieDetailsActivity;
 import hkapps.playmxtv.Adapters.PeliculasDetailsDescriptionPresenter;
-import hkapps.playmxtv.Adapters.StringPresenter;
 import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
 import hkapps.playmxtv.Model.Trailer;
@@ -57,7 +54,6 @@ import hkapps.playmxtv.Scrapper.StreamCloudRequest;
 import hkapps.playmxtv.Services.PlayMaxAPI;
 import hkapps.playmxtv.Services.Requester;
 import hkapps.playmxtv.Static.MyUtils;
-import hkapps.playmxtv.Static.Utils;
 
 /*
  * LeanbackDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
@@ -78,9 +74,7 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
     private Drawable mDefaultBackground;
     private DisplayMetrics mMetrics;
     private Usuario mActiveUser;
-    private ArrayObjectAdapter mRowsAdapter;
-    private DetailsOverviewRow detailsOverview;
-    private FullWidthDetailsOverviewRowPresenter rowPresenter;
+
     private FullWidthDetailsOverviewRowPresenter detailsPresenter;
     private FullWidthDetailsOverviewSharedElementHelper mHelper;
     private ClassPresenterSelector mPresenterSelector;
@@ -134,51 +128,6 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
     }
 
 
-  private void lanzarPelicula(){
-      //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
-      Requester.request(PeliculaDetailsFragment.this.getActivity(),
-              PlayMaxAPI.getInstance().requestEnlaces(mActiveUser, mSelectedMovie, "0"),
-              new Response.Listener<String>() {
-                  @Override
-                  public void onResponse(String response) {
-                      try {
-                          List<Enlace> enlaces = Enlace.listFromXML(response);
-                          MyUtils.showLinkList(PeliculaDetailsFragment.this.getActivity(), enlaces, new Enlace.EnlaceListener() {
-                              @Override
-                              public void onEnlaceSelected(Enlace selected) {
-                                  StreamCloudRequest.getDirectUrl(PeliculaDetailsFragment.this.getActivity(), selected.getUrl(), new ScrapperListener() {
-                                      @Override
-                                      public void onDirectUrlObtained(String direct_url) {
-                                          MyUtils.launchMXP(getActivity(), direct_url);
-                                      }
-                                  });
-                              }
-                          });
-                      } catch (Exception e) {
-                          e.printStackTrace();
-                      }
-                  }
-              });
-  }
-
-    private void lanzarTrailer(){
-        //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
-        Requester.request(PeliculaDetailsFragment.this.getActivity(),
-                PlayMaxAPI.getInstance().requestTrailers(mActiveUser, mSelectedMovie),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            List<Trailer> enlaces = Trailer.listFromXML(response);
-                            if(enlaces.size() > 0) {
-                                MyUtils.launchYT(PeliculaDetailsFragment.this.getActivity(), enlaces.get(0).getYTId());
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-    }
 
     private void setupAdapter() {
         // Set detail background and style.
@@ -208,8 +157,8 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
     private void setupDetailsOverviewRow() {
         mainRow = new DetailsOverviewRow(mSelectedMovie);
 
-        int width = Utils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_WIDTH);
-        int height = Utils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_HEIGHT);
+        int width = MyUtils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_WIDTH);
+        int height = MyUtils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_HEIGHT);
 
         Glide.with(this)
                 .load(mSelectedMovie.getPoster())
@@ -239,9 +188,9 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
     @Override
     public void onActionClicked(Action action) {
         if (action.getId() == ACTION_PLAY){
-            lanzarPelicula();
+            MyUtils.lanzarPelicula(this.getActivity(), mActiveUser, mSelectedMovie);
         }else if(action.getId() == ACTION_WATCH_TRAILER){
-            lanzarTrailer();
+            MyUtils.lanzarTrailer(this.getActivity(), mActiveUser, mSelectedMovie);
         }
     }
 }

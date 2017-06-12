@@ -16,15 +16,12 @@ package hkapps.playmxtv.Fragments;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.DetailsFragment;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
-import android.support.v17.leanback.widget.BaseOnItemViewClickedListener;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.DetailsOverviewRow;
 import android.support.v17.leanback.widget.FullWidthDetailsOverviewRowPresenter;
@@ -33,40 +30,26 @@ import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnActionClickedListener;
-import android.support.v17.leanback.widget.Presenter;
-import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.graphics.Palette;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.List;
 
-import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
 import hkapps.playmxtv.Activities.MainActivity;
 import hkapps.playmxtv.Activities.SerieDetailsActivity;
-import hkapps.playmxtv.Adapters.EpisodePresenter;
-import hkapps.playmxtv.Adapters.GridItemPresenter;
-import hkapps.playmxtv.Adapters.MovieDetailsOverviewLogoPresenter;
 import hkapps.playmxtv.Adapters.PeliculasDetailsDescriptionPresenter;
-import hkapps.playmxtv.Adapters.StringPresenter;
 import hkapps.playmxtv.Adapters.TemporadaPresenter;
 import hkapps.playmxtv.Model.Capitulo;
 import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
 import hkapps.playmxtv.Model.Temporada;
-import hkapps.playmxtv.Model.Trailer;
 import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
 import hkapps.playmxtv.Scrapper.ScrapperListener;
@@ -74,7 +57,6 @@ import hkapps.playmxtv.Scrapper.StreamCloudRequest;
 import hkapps.playmxtv.Services.PlayMaxAPI;
 import hkapps.playmxtv.Services.Requester;
 import hkapps.playmxtv.Static.MyUtils;
-import hkapps.playmxtv.Static.Utils;
 
 /*
  * LeanbackDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
@@ -153,43 +135,6 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
                 });
     }
 
-
-  private void lanzarCapitulo(final Capitulo episode){
-      //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
-      Requester.request(SerieDetailsFragment.this.getActivity(),
-              PlayMaxAPI.getInstance().requestEnlaces(mActiveUser, mSelectedShow, episode.getIdCapitulo()),
-              new Response.Listener<String>() {
-                  @Override
-                  public void onResponse(String response) {
-                      try {
-                          List<Enlace> enlaces = Enlace.listFromXML(response);
-
-                          MyUtils.showLinkList(SerieDetailsFragment.this.getActivity(), enlaces, new Enlace.EnlaceListener() {
-                              @Override
-                              public void onEnlaceSelected(Enlace selected) {
-                                  StreamCloudRequest.getDirectUrl(SerieDetailsFragment.this.getActivity(), selected.getUrl(), new ScrapperListener() {
-                                      @Override
-                                      public void onDirectUrlObtained(final String direct_url) {
-                                          //Marcar como visto
-                                          Requester.request(SerieDetailsFragment.this.getActivity(),
-                                                  PlayMaxAPI.getInstance().requestMarkAsViewed(mActiveUser.getSid(), episode.getIdCapitulo()), new Response.Listener<String>() {
-                                                      @Override
-                                                      public void onResponse(String response) {
-                                                          MyUtils.launchMXP(getActivity(), direct_url);
-                                                      }
-                                                  });
-                                      }
-                                  });
-                              }
-                          });
-
-                      } catch (Exception e) {
-                          e.printStackTrace();
-                      }
-                  }
-              });
-  }
-
     private void setupAdapter() {
         // Set detail background and style.
         detailsPresenter =
@@ -218,8 +163,8 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
     private void setupDetailsOverviewRow() {
         mainRow = new DetailsOverviewRow(mSelectedShow);
 
-        int width = Utils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_WIDTH);
-        int height = Utils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_HEIGHT);
+        int width = MyUtils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_WIDTH);
+        int height = MyUtils.convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_HEIGHT);
 
         Glide.with(this)
                 .load(mSelectedShow.getPoster())
@@ -257,16 +202,16 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
     @Override
     public void onActionClicked(Action action) {
         if (action.getId() == ACTION_PLAY){
-            lanzarCapitulo(Capitulo.findFirstNonViewed(mSelectedShow.getCapitulos()));
+            MyUtils.lanzarCapitulo(this.getActivity(), mActiveUser, mSelectedShow,Capitulo.findFirstNonViewed(mSelectedShow.getCapitulos()));
         }else if(action.getId() == ACTION_RANDOM){
-            lanzarCapitulo(Capitulo.random(mSelectedShow.getCapitulos()));
+            MyUtils.lanzarCapitulo(this.getActivity(), mActiveUser, mSelectedShow,Capitulo.random(mSelectedShow.getCapitulos()));
         }
     }
 
 
     @Override
     public void onCapituloClicked(Capitulo capitulo) {
-        lanzarCapitulo(capitulo);
+        MyUtils.lanzarCapitulo(this.getActivity(), mActiveUser, mSelectedShow,capitulo);
     }
 
 }

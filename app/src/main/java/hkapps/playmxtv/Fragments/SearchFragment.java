@@ -19,14 +19,10 @@ import android.util.Log;
 
 import com.android.volley.Response;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 import java.util.List;
 
 import hkapps.playmxtv.Activities.LoginActivity;
 import hkapps.playmxtv.Activities.MainActivity;
-import hkapps.playmxtv.Activities.SearchActivity;
 import hkapps.playmxtv.Adapters.CardPresenter;
 import hkapps.playmxtv.Liestener.ResultsListener;
 import hkapps.playmxtv.Model.Ficha;
@@ -34,7 +30,6 @@ import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
 import hkapps.playmxtv.Services.PlayMaxAPI;
 import hkapps.playmxtv.Services.Requester;
-import hkapps.playmxtv.Static.Utils;
 
 public class SearchFragment extends android.support.v17.leanback.app.SearchFragment
         implements android.support.v17.leanback.app.SearchFragment.SearchResultProvider,

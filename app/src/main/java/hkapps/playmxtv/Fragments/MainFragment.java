@@ -28,21 +28,15 @@ import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
-import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
-import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.Presenter;
-import android.support.v17.leanback.widget.Row;
-import android.support.v17.leanback.widget.RowPresenter;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.bumptech.glide.Glide;
@@ -51,22 +45,15 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import hkapps.playmxtv.Activities.MainActivity;
-import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
-import hkapps.playmxtv.Activities.BrowseErrorActivity;
 import hkapps.playmxtv.Activities.SearchActivity;
-import hkapps.playmxtv.Activities.SerieDetailsActivity;
 import hkapps.playmxtv.Adapters.CardPresenter;
 import hkapps.playmxtv.Liestener.ResultsListener;
-import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
 import hkapps.playmxtv.Model.Usuario;
 import hkapps.playmxtv.R;
-import hkapps.playmxtv.Scrapper.ScrapperListener;
-import hkapps.playmxtv.Scrapper.StreamCloudRequest;
 import hkapps.playmxtv.Services.PlayMaxAPI;
 import hkapps.playmxtv.Services.Requester;
 import hkapps.playmxtv.Static.MyUtils;
-import hkapps.playmxtv.Static.Utils;
 import hkapps.playmxtv.Views.CircleTransform;
 
 public class MainFragment extends BrowseFragment {
@@ -238,8 +225,8 @@ public class MainFragment extends BrowseFragment {
     }
     
     void setAvatarImage(){
-        int width = Utils.convertDpToPixel(getActivity().getApplicationContext(), AVATAR_SIZE);
-        int height = Utils.convertDpToPixel(getActivity().getApplicationContext(), AVATAR_SIZE);
+        int width = MyUtils.convertDpToPixel(getActivity().getApplicationContext(), AVATAR_SIZE);
+        int height = MyUtils.convertDpToPixel(getActivity().getApplicationContext(), AVATAR_SIZE);
         Glide.with(getActivity())
                 .load(user.getAvatar())
                 .centerCrop()

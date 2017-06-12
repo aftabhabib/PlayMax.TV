@@ -67,28 +67,7 @@ public class ResultsListener implements OnItemViewClickedListener {
                         if(row.getHeaderItem().getId() == MainFragment.EPISODE_ROW_ID){
                             //Si tenemos capitulo: Lanzamos el detail para capitulo
                             //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
-                            Requester.request(activity,PlayMaxAPI.getInstance().requestEnlaces(user, fr, fr.getIdCapitulo()),
-                                    new Response.Listener<String>() {
-                                        @Override
-                                        public void onResponse(String response) {
-                                            try {
-                                                List<Enlace> enlaces = Enlace.listFromXML(response);
-                                                MyUtils.showLinkList(activity, enlaces, new Enlace.EnlaceListener() {
-                                                    @Override
-                                                    public void onEnlaceSelected(Enlace selected) {
-                                                        StreamCloudRequest.getDirectUrl(activity, selected.getUrl(), new ScrapperListener() {
-                                                            @Override
-                                                            public void onDirectUrlObtained(String direct_url) {
-                                                                MyUtils.launchMXP(activity, direct_url);
-                                                            }
-                                                        });
-                                                    }
-                                                });
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    });
+                            MyUtils.lanzarCapitulo(activity, user, fr, fr.getIdCapitulo());
                         }else if(fr.isSerie()){
                             //Es Serie
                             Intent intent = new Intent(activity, SerieDetailsActivity.class);
