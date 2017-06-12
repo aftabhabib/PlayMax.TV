@@ -45,7 +45,7 @@
     <string name="login_getting_settings">Recuperando credenciales guardadas...</string>
     <string name="login_settings_not_found_starting">Credenciales no encontradas, iniciando servidor...</string>
     <string name="login_request">Iniciando sesion...</string>
-    <string name="login_received_from_server">¡Credenciales recividas con exito!</string>
+    <string name="login_received_from_server">¡Credenciales recibidas con exito!</string>
     <string name="login_esperando">Esperando...</string>
     <string name="logout">Cerrar Sesión</string>
 </resources>

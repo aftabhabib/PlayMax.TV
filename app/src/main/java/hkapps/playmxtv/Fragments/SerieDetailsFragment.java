@@ -183,7 +183,7 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
 
         SparseArrayObjectAdapter adapter = new SparseArrayObjectAdapter();
 
-        adapter.set(ACTION_PLAY, new Action(ACTION_PLAY, "Siguiente"));
+        //adapter.set(ACTION_PLAY, new Action(ACTION_PLAY, "Siguiente"));
         adapter.set(ACTION_RANDOM, new Action(ACTION_RANDOM, "Aleatorio"));
 
         mainRow.setActionsAdapter(adapter);

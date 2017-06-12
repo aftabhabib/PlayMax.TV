@@ -103,7 +103,7 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
     }
 
     private void loginUser(String username, String password){
-        status.setText(R.string.login_request);
+        //status.setText(R.string.login_request);
         try {
             Requester.request(this, PlayMaxAPI.getInstance().requestLogin(username,password),new Response.Listener<String>(){
 
@@ -152,7 +152,7 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
     @Override
     public void onResponse(String username, String password) {
 
-        status.setText(R.string.login_received_from_server);
+        //status.setText(R.string.login_received_from_server);
 
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(USERNAME_TAG,username);
