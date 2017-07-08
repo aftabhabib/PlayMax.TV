@@ -21,6 +21,21 @@ import hkapps.playmxtv.Services.PlayMaxAPI;
  */
 
 public class Ficha implements Serializable, Cloneable {
+
+    public String getMarked() {
+        return marked;
+    }
+
+    public void setMarked(String marked) {
+        this.marked = marked;
+    }
+
+    //respect order starting in 1
+    public static String[] options = {
+            "following","pending","favorite","viewed"
+    };
+
+
     /* Resumida
     <Ficha>
     <Title><![CDATA[Better Call Saul]]></Title>
@@ -84,6 +99,8 @@ public class Ficha implements Serializable, Cloneable {
 
     List<Enlace> enlaces = null;
     List<Capitulo> capitulos = null;
+
+    String marked;
 
     public List<Enlace> getEnlaces(){return enlaces;}
     public void setEnlaces(List<Enlace> enlaces){this.enlaces = enlaces;}
@@ -232,6 +249,9 @@ public class Ficha implements Serializable, Cloneable {
                         case PlayMaxAPI.SINOPSIS_TAG:
                             sinopsys = CURRENT_TEXT;
                             break;
+                        case PlayMaxAPI.MARKED_TAG:
+                            marked = CURRENT_TEXT;
+                            break;
                     }
                 }
             } else if(eventType == XmlPullParser.TEXT) {
@@ -307,5 +327,9 @@ public class Ficha implements Serializable, Cloneable {
 
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    public interface FollowSelection {
+        void optionSelected(int code);
     }
 }

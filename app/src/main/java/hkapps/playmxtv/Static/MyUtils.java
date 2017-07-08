@@ -24,6 +24,7 @@ import com.android.volley.Response;
 import java.util.List;
 
 import hkapps.playmxtv.Adapters.EnlacesAdapter;
+import hkapps.playmxtv.Adapters.FollowAdapter;
 import hkapps.playmxtv.Adapters.TemporadaPresenter;
 import hkapps.playmxtv.Fragments.PeliculaDetailsFragment;
 import hkapps.playmxtv.Fragments.SerieDetailsFragment;
@@ -32,6 +33,7 @@ import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
 import hkapps.playmxtv.Model.Trailer;
 import hkapps.playmxtv.Model.Usuario;
+import hkapps.playmxtv.R;
 import hkapps.playmxtv.Scrapper.ScrapperListener;
 import hkapps.playmxtv.Scrapper.StreamCloudRequest;
 import hkapps.playmxtv.Services.PlayMaxAPI;
@@ -176,5 +178,46 @@ public class MyUtils {
     public static int convertDpToPixel(Context ctx, int dp) {
         float density = ctx.getResources().getDisplayMetrics().density;
         return Math.round((float) dp * density);
+    }
+
+    public static void showFollowList(Context mContext,final Ficha mShow, final Ficha.FollowSelection listener){
+        final Dialog dialog = new Dialog(mContext);
+
+        /*
+        public static final int follow = 1;
+        public static final int pending = 2;
+        public static final int favorite = 3;
+        public static final int viewed = 4;
+         */
+
+        //ORDER MATTERS
+        String[] labels = {
+                mContext.getResources().getString(R.string.follow_follow),
+                mContext.getResources().getString(R.string.follow_pending),
+                mContext.getResources().getString(R.string.follow_favorite),
+                mContext.getResources().getString(R.string.follow_viewed),
+        };
+
+        String[] options = {
+                "following","pending","favorite","viewed"
+        };
+
+        final FollowAdapter enlacesAdapter = new FollowAdapter(labels, options, mShow.getMarked());
+
+        //Prepare ListView in dialog
+        ListView dialog_ListView = new ListView(dialog.getContext());
+        dialog_ListView.setAdapter(enlacesAdapter);
+        dialog_ListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                listener.optionSelected(position+1);
+                dialog.dismiss();
+            }
+        });
+
+        dialog.setContentView(dialog_ListView);
+        dialog.create();
+        dialog.show();
     }
 }

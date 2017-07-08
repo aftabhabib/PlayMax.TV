@@ -14,6 +14,7 @@
 
 package hkapps.playmxtv.Fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -33,6 +34,7 @@ import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.bumptech.glide.Glide;
@@ -66,11 +68,12 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
         TemporadaPresenter.OnCapituloListener{
     private static final String TAG = "VideoDetailsFragment";
 
-    private static final int ACTION_RANDOM = 1;
-    private static final int ACTION_PLAY = 2;
+    private static final int ACTION_RANDOM = 2;
+    private static final int ACTION_PLAY = 1;
 
     private static final int DETAIL_THUMB_WIDTH = 400;
     private static final int DETAIL_THUMB_HEIGHT = 600;
+    private static final int ACTION_FOLLOW = 3;
 
     private Ficha mSelectedShow;
 
@@ -141,7 +144,9 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
                 new FullWidthDetailsOverviewRowPresenter(
                         new PeliculasDetailsDescriptionPresenter());
 
-        //detailsPresenter.setBackgroundColor(color);
+        //detailsPresenter.setBackgroundColor(R.color.description_pane);
+        detailsPresenter.setBackgroundColor(getActivity().getResources().getColor( R.color.description_pane));
+        detailsPresenter.setActionsBackgroundColor(getActivity().getResources().getColor( R.color.description_pane));
         detailsPresenter.setInitialState(FullWidthDetailsOverviewRowPresenter.STATE_HALF);
 
         // Hook up transition element.
@@ -183,10 +188,13 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
 
         SparseArrayObjectAdapter adapter = new SparseArrayObjectAdapter();
 
-        //adapter.set(ACTION_PLAY, new Action(ACTION_PLAY, "Siguiente"));
-        adapter.set(ACTION_RANDOM, new Action(ACTION_RANDOM, "Aleatorio"));
+        Context context = this.getActivity();
+        adapter.set(ACTION_PLAY, new Action(ACTION_PLAY, context.getResources().getString(R.string.play_episode)));
+        adapter.set(ACTION_RANDOM, new Action(ACTION_RANDOM, context.getResources().getString(R.string.random)));
+        adapter.set(ACTION_FOLLOW, new Action(ACTION_FOLLOW, context.getResources().getString(R.string.follow)));
 
         mainRow.setActionsAdapter(adapter);
+        mainRow.setImageScaleUpAllowed(true);
 
         mAdapter.add(mainRow);
     }
@@ -202,9 +210,30 @@ public class SerieDetailsFragment extends DetailsFragment implements OnActionCli
     @Override
     public void onActionClicked(Action action) {
         if (action.getId() == ACTION_PLAY){
-            MyUtils.lanzarCapitulo(this.getActivity(), mActiveUser, mSelectedShow,Capitulo.findFirstNonViewed(mSelectedShow.getCapitulos()));
+            //MyUtils.lanzarCapitulo(this.getActivity(), mActiveUser, mSelectedShow,Capitulo.findFirstNonViewed(mSelectedShow.getCapitulos()));
+            //Tenemos que hacer scroll hasta donde empiezan los capitulos.
+            getRowsFragment().setSelectedPosition(1, true);
         }else if(action.getId() == ACTION_RANDOM){
             MyUtils.lanzarCapitulo(this.getActivity(), mActiveUser, mSelectedShow,Capitulo.random(mSelectedShow.getCapitulos()));
+        }else if(action.getId() == ACTION_FOLLOW){
+            MyUtils.showFollowList(this.getActivity(), mSelectedShow, new Ficha.FollowSelection() {
+                @Override
+                public void optionSelected(final int code) {
+                    Requester.request(getActivity(),
+                            PlayMaxAPI.getInstance().requestMarkFollow(mActiveUser.getSid(), mSelectedShow.getId(), code), new Response.Listener<String>(){
+                                @Override
+                                public void onResponse(String response) {
+                                    if(response.equalsIgnoreCase("0")){
+                                        // deSelected
+                                        mSelectedShow.setMarked("");
+                                    }else{
+                                        // Selected
+                                        mSelectedShow.setMarked(Ficha.options[code - 1]);
+                                    }
+                                }
+                            });
+                }
+            });
         }
     }
 

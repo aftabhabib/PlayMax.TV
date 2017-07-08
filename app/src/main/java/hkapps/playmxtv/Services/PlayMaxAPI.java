@@ -36,6 +36,7 @@ public class PlayMaxAPI {
     public static final String EPISODE_VIEWED_TAG = "EpisodeViewed";
     public static final String EPISODES_TAG = "Episodes";
     public static final String SEASONS_TAG = "Seasons";
+    public static final String MARKED_TAG = "Marked";
     private static PlayMaxAPI me=null;
 
     public static final String TYPE_TAG = "Type";
@@ -301,6 +302,29 @@ public class PlayMaxAPI {
                         "&sid="+sid+
                         "&c_id="+c_id+
                         "&forzar=desmarcar";
+            }
+
+            @Override
+            public int getMethod() {
+                return Request.Method.GET;
+            }
+
+            @Override
+            public Map<String,String> getBody() {
+                return null;
+            }
+        };
+    }
+
+    public Requester.Requestable requestMarkFollow(final String sid, final String show, final int follow){
+        return new Requester.Requestable() {
+            @Override
+            public String getUrl() {
+                return "https://playmax.mx/data.php?mode=marcar_ficha" +
+                        "&apikey="+ Constants.APIKEY+
+                        "&sid="+sid+
+                        "&ficha="+show+
+                        "&tipo="+follow;
             }
 
             @Override

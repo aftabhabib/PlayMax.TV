@@ -80,6 +80,7 @@ public class MainFragment extends BrowseFragment {
     private BackgroundManager mBackgroundManager;
 
     private Usuario user;
+    private ArrayObjectAdapter proximos, series, peliculas;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -157,9 +158,9 @@ public class MainFragment extends BrowseFragment {
 
     private void loadMyRows(List<Ficha> fichas) {
 
-        ArrayObjectAdapter proximos = new ArrayObjectAdapter(new CardPresenter());
-        ArrayObjectAdapter series = new ArrayObjectAdapter(new CardPresenter());
-        ArrayObjectAdapter peliculas = new ArrayObjectAdapter(new CardPresenter());
+        proximos = new ArrayObjectAdapter(new CardPresenter());
+        series = new ArrayObjectAdapter(new CardPresenter());
+        peliculas = new ArrayObjectAdapter(new CardPresenter());
 
         HeaderItem hproximos = new HeaderItem(EPISODE_ROW_ID,"Proximos Capitulos");
         HeaderItem hseries = new HeaderItem(SHOWS_ROW_ID,"Tus Series");
@@ -184,6 +185,31 @@ public class MainFragment extends BrowseFragment {
         setAdapter(mRowsAdapter);
 
     }
+
+    private void reLoadMyRows(List<Ficha> fichas) {
+
+        proximos.clear();
+        series.clear();
+        peliculas.clear();
+
+
+        for(Ficha fr : fichas){
+            if(fr.getLastEpisode() != null)
+                try {
+                    proximos.add(fr.clone());
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
+
+            if(fr.isSerie())
+                series.add(fr);
+            else peliculas.add(fr);
+        }
+
+        getAdapter().notifyItemRangeChanged(0,getAdapter().size());
+
+    }
+
     private void loadRecomendedRows(List<Ficha> fichas) {
 
         ArrayObjectAdapter series = new ArrayObjectAdapter(new CardPresenter());
@@ -296,6 +322,27 @@ public class MainFragment extends BrowseFragment {
         }
         mBackgroundTimer = new Timer();
         mBackgroundTimer.schedule(new UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        //Anidadas para matener el orden
+        //Pedimos las series
+        Requester.request(getActivity(), PlayMaxAPI.getInstance().requestSumary(user), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    List<Ficha> fichas = Ficha.listFromXML(response);
+                    Log.d("REQ",fichas.toString());
+
+                    reLoadMyRows(fichas);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 

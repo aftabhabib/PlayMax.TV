@@ -14,6 +14,7 @@
 
 package hkapps.playmxtv.Fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -62,8 +63,9 @@ import hkapps.playmxtv.Static.MyUtils;
 public class PeliculaDetailsFragment extends DetailsFragment implements OnActionClickedListener {
     private static final String TAG = "VideoDetailsFragment";
 
-    private static final int ACTION_WATCH_TRAILER = 1;
-    private static final int ACTION_PLAY = 2;
+    private static final int ACTION_WATCH_TRAILER = 2;
+    private static final int ACTION_PLAY = 1;
+    private static final int ACTION_FOLLOW = 3;
 
     private static final int DETAIL_THUMB_WIDTH = 400;
     private static final int DETAIL_THUMB_HEIGHT = 600;
@@ -135,7 +137,9 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
                 new FullWidthDetailsOverviewRowPresenter(
                         new PeliculasDetailsDescriptionPresenter());
 
-        //detailsPresenter.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.selected_background));
+        detailsPresenter.setBackgroundColor(getActivity().getResources().getColor( R.color.description_pane));
+        detailsPresenter.setActionsBackgroundColor(getActivity().getResources().getColor( R.color.description_pane));
+
         detailsPresenter.setInitialState(FullWidthDetailsOverviewRowPresenter.STATE_HALF);
 
         // Hook up transition element.
@@ -177,8 +181,10 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
 
         SparseArrayObjectAdapter adapter = new SparseArrayObjectAdapter();
 
-        adapter.set(ACTION_PLAY, new Action(ACTION_PLAY, "Reproducir"));
-        adapter.set(ACTION_WATCH_TRAILER, new Action(ACTION_WATCH_TRAILER, "Trailer"));
+        Context context = this.getActivity();
+        adapter.set(ACTION_PLAY, new Action(ACTION_PLAY, context.getResources().getString(R.string.play)));
+        adapter.set(ACTION_WATCH_TRAILER, new Action(ACTION_WATCH_TRAILER,context.getResources().getString(R.string.trailer)));
+        adapter.set(ACTION_FOLLOW, new Action(ACTION_FOLLOW, context.getResources().getString(R.string.follow)));
 
         mainRow.setActionsAdapter(adapter);
 
@@ -191,6 +197,25 @@ public class PeliculaDetailsFragment extends DetailsFragment implements OnAction
             MyUtils.lanzarPelicula(this.getActivity(), mActiveUser, mSelectedMovie);
         }else if(action.getId() == ACTION_WATCH_TRAILER){
             MyUtils.lanzarTrailer(this.getActivity(), mActiveUser, mSelectedMovie);
+        }else if(action.getId() == ACTION_FOLLOW){
+            MyUtils.showFollowList(this.getActivity(), mSelectedMovie, new Ficha.FollowSelection() {
+                @Override
+                public void optionSelected(final int code) {
+                    Requester.request(getActivity(),
+                            PlayMaxAPI.getInstance().requestMarkFollow(mActiveUser.getSid(), mSelectedMovie.getId(), code), new Response.Listener<String>(){
+                                @Override
+                                public void onResponse(String response) {
+                                    if(response.equalsIgnoreCase("0")){
+                                        // deSelected
+                                        mSelectedMovie.setMarked("");
+                                    }else{
+                                        // Selected
+                                        mSelectedMovie.setMarked(Ficha.options[code - 1]);
+                                    }
+                                }
+                            });
+                }
+            });
         }
     }
 }

@@ -6,7 +6,7 @@
     <string name="error">Error</string>
     <string name="ok">OK</string>
     <string name="pause">Pause</string>
-    <string name="play">Play</string>
+    <string name="play">Reproducir</string>
     <string name="stop">Stop</string>
     <string name="init_text">00:00</string>
     <string name="play_pause_description">Play Pause Button</string>
@@ -48,4 +48,12 @@
     <string name="login_received_from_server">¡Credenciales recibidas con exito!</string>
     <string name="login_esperando">Esperando...</string>
     <string name="logout">Cerrar Sesión</string>
+    <string name="play_episode">Seleccionar Capitulo</string>
+    <string name="random">Aleatorio</string>
+    <string name="follow">Marcar</string>
+    <string name="follow_follow">Seguir</string>
+    <string name="follow_pending">Pendiente</string>
+    <string name="follow_favorite">Favorito</string>
+    <string name="follow_viewed">Vista</string>
+    <string name="trailer">Trailer</string>
 </resources>

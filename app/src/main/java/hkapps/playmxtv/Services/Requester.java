@@ -24,6 +24,16 @@ import java.util.Map;
 public class Requester {
 
     public static void request(Context context, Requestable requestable, Response.Listener<String> listener){
+
+        if (listener == null) {
+            listener = new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    // nothing to be done
+                }
+            };
+        }
+
         switch (requestable.getMethod()){
             case Request.Method.GET:
                 GET_request(context,requestable,listener);
@@ -34,6 +44,23 @@ public class Requester {
         }
     }
 
+    public static void request(Context context, Requestable requestable){
+        Response.Listener<String> listener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                // nothing to be done
+            }
+        };
+
+        switch (requestable.getMethod()){
+            case Request.Method.GET:
+                GET_request(context,requestable,listener);
+                break;
+            case Request.Method.POST:
+                POST_request(context,requestable,listener);
+                break;
+        }
+    }
     private static void GET_request(Context context, Requestable requestable, Response.Listener<String> listener){
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
