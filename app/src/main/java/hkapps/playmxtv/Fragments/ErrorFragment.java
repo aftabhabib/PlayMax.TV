@@ -35,7 +35,7 @@ public class ErrorFragment extends android.support.v17.leanback.app.ErrorFragmen
 
     public void setErrorContent() {
         setImageDrawable(getResources().getDrawable(R.drawable.lb_ic_sad_cloud));
-        setMessage(getResources().getString(R.string.error_fragment_message));
+        setMessage(getResources().getString(R.string.error_mxplayer_missing));
         setDefaultBackground(TRANSLUCENT);
 
         setButtonText(getResources().getString(R.string.dismiss_error));
