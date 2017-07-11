@@ -25,6 +25,7 @@ import hkapps.playmxtv.Activities.MainActivity;
 import hkapps.playmxtv.Activities.PeliculasDetailsActivity;
 import hkapps.playmxtv.Activities.SerieDetailsActivity;
 import hkapps.playmxtv.Fragments.MainFragment;
+import hkapps.playmxtv.Model.Capitulo;
 import hkapps.playmxtv.Model.Enlace;
 import hkapps.playmxtv.Model.Ficha;
 import hkapps.playmxtv.Model.Usuario;
@@ -67,7 +68,7 @@ public class ResultsListener implements OnItemViewClickedListener {
                         if(row.getHeaderItem().getId() == MainFragment.EPISODE_ROW_ID){
                             //Si tenemos capitulo: Lanzamos el detail para capitulo
                             //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
-                            MyUtils.lanzarCapitulo(activity, user, fr, fr.getIdCapitulo());
+                            MyUtils.lanzarCapitulo(activity, user, fr, new Capitulo(fr.getIdCapitulo()));
                         }else if(fr.isSerie()){
                             //Es Serie
                             Intent intent = new Intent(activity, SerieDetailsActivity.class);

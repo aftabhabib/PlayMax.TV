@@ -62,6 +62,11 @@ public class Capitulo implements Serializable,Comparable<Capitulo> {
         this.viewed = viewed;
     }
 
+    //Look for a get episode function in playmax api
+    public Capitulo(String id_capitulo){
+        this(id_capitulo,"","","","","");
+    }
+
     public static Capitulo fromXML(String response) throws XmlPullParserException, IOException {
         XmlPullParser parser = Xml.newPullParser();
         parser.setInput( new StringReader( response ) );

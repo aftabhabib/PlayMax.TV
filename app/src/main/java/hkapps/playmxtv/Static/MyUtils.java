@@ -23,6 +23,8 @@ import com.android.volley.Response;
 
 import java.util.List;
 
+import hkapps.playmxtv.Activities.MainActivity;
+import hkapps.playmxtv.Activities.PlaybackOverlayActivity;
 import hkapps.playmxtv.Adapters.EnlacesAdapter;
 import hkapps.playmxtv.Adapters.FollowAdapter;
 import hkapps.playmxtv.Adapters.TemporadaPresenter;
@@ -111,15 +113,11 @@ public class MyUtils {
     }
 
     public static void lanzarCapitulo(final Context activity, final Usuario mActiveUser, Ficha mSelectedShow, final Capitulo episode){
-        lanzarCapitulo(activity, mActiveUser, mSelectedShow, episode.getIdCapitulo());
-    }
-
-    public static void lanzarCapitulo(final Context activity, final Usuario mActiveUser, Ficha mSelectedShow, final String episode){
-        lanzarEnlace(activity, mActiveUser, mSelectedShow, episode);
+        lanzarEnlaceDentro(activity, mActiveUser, mSelectedShow, episode);
     }
 
     public static void lanzarPelicula(final Context activity, final Usuario mActiveUser, Ficha mSelectedShow){
-        lanzarEnlace(activity, mActiveUser, mSelectedShow, "0");
+        lanzarEnlaceDentro(activity, mActiveUser, mSelectedShow, null);
     }
 
     public static void lanzarEnlace(final Context activity, final Usuario mActiveUser, Ficha mSelectedShow, final String episode){
@@ -220,4 +218,43 @@ public class MyUtils {
         dialog.create();
         dialog.show();
     }
+
+    public static void lanzarEnlaceDentro(final Context activity, final Usuario mActiveUser, final Ficha mSelectedShow, final Capitulo episode){
+        final String capitulo_id=(episode==null?"0":episode.getIdCapitulo());
+        //Recuperar el primer enlace streamcloud de los que me den y lanzar MX Player.
+        Requester.request(activity, PlayMaxAPI.getInstance().requestEnlaces(mActiveUser, mSelectedShow,capitulo_id),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            List<Enlace> enlaces = Enlace.listFromXML(response);
+
+                            MyUtils.showLinkList(activity, enlaces, new Enlace.EnlaceListener() {
+                                @Override
+                                public void onEnlaceSelected(Enlace selected) {
+                                    StreamCloudRequest.getDirectUrl(activity, selected.getUrl(), new ScrapperListener() {
+                                        @Override
+                                        public void onDirectUrlObtained(final String direct_url) {
+                                            //Marcar como visto
+                                            Requester.request(activity, PlayMaxAPI.getInstance().requestMarkAsViewed(mActiveUser.getSid(), capitulo_id), new Response.Listener<String>() {
+                                                @Override
+                                                public void onResponse(String response) {
+                                                    //MyUtils.launchMXP(activity, direct_url);
+                                                    Intent intent = new Intent(activity, PlaybackOverlayActivity.class);
+                                                    intent.putExtra(MainActivity.FICHA, new Ficha.FichaReproducible(mSelectedShow, direct_url, episode));
+                                                    activity.startActivity(intent);
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
 }

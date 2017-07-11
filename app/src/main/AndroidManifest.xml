@@ -36,6 +36,7 @@
         <activity android:name=".Activities.SerieDetailsActivity" />
         <activity android:name=".Activities.BrowseErrorActivity" />
         <activity android:name=".Activities.SearchActivity"/>
+        <activity android:name=".Activities.PlaybackOverlayActivity"/>
     </application>
 
 </manifest>

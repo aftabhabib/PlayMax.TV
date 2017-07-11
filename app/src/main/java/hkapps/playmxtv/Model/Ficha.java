@@ -22,6 +22,33 @@ import hkapps.playmxtv.Services.PlayMaxAPI;
 
 public class Ficha implements Serializable, Cloneable {
 
+
+    public String getYear() {
+        return year;
+    }
+
+    public static class FichaReproducible extends Ficha{
+        String direct_link;
+        Capitulo capitulo;
+
+        public FichaReproducible(Ficha ficha, String url, Capitulo capitulo) {
+            super(ficha.id, ficha.type, ficha.title, ficha.poster, ficha.rating, ficha.your_rating, ficha.isSerie);
+            direct_link = url;
+            this.capitulo = capitulo;
+        }
+        public FichaReproducible(Ficha ficha, String url){
+            this(ficha,url,null);
+        }
+
+        public String getDirectUrl() {
+            return direct_link;
+        }
+
+        public Capitulo getCapitulo() {
+            return capitulo;
+        }
+    }
+
     public String getMarked() {
         return marked;
     }
@@ -286,6 +313,10 @@ public class Ficha implements Serializable, Cloneable {
 
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title){
+        this.title = title;
     }
 
     public String getLastEpisode() {
