@@ -27,6 +27,9 @@ import hkapps.playmxtv.Services.PlayMaxAPI;
  */
 
 public class Capitulo implements Serializable,Comparable<Capitulo> {
+    public interface CapituloViewedListener{
+        void onMarked(boolean marked, Capitulo capitulo);
+    }
     /*
     <Episodes>
         <Season_0>

@@ -46,13 +46,38 @@ import hkapps.playmxtv.Services.Requester;
  */
 
 public class MyUtils {
+    public static final String MXPLAYER_FREE = "com.mxtech.videoplayer.ad";
+    public static final String MXPLAYER_PRO = "com.mxtech.videoplayer.pro";
     public static void launchMXP(Context act, String url){
+        /*
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri videoUri = Uri.parse(url);
         //intent.setDataAndType( videoUri, "application/x-mpegURL" );
         intent.setDataAndType( videoUri, "video/*" );
         intent.setPackage( "com.mxtech.videoplayer.ad" );
         act.startActivity( intent );
+        */
+
+        Intent myIntent;
+        PackageManager pm = act.getPackageManager();
+        try {
+            myIntent = pm.getLaunchIntentForPackage(MXPLAYER_FREE);
+            if (null != myIntent){
+                Uri videoUri = Uri.parse(url);
+                myIntent.setDataAndType( videoUri, "video/*" );
+                act.startActivity(myIntent);
+            }else{
+                try {
+                    act.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + MXPLAYER_FREE)));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    act.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + MXPLAYER_FREE)));
+                }
+            }
+
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(act,"MXPLAYER or STORE not found!",Toast.LENGTH_LONG).show();
+        }
+
     }
     public static void launchYT(Context act, String id){
             Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
@@ -113,11 +138,11 @@ public class MyUtils {
     }
 
     public static void lanzarCapitulo(final Context activity, final Usuario mActiveUser, Ficha mSelectedShow, final Capitulo episode){
-        lanzarEnlaceDentro(activity, mActiveUser, mSelectedShow, episode);
+        lanzarEnlace(activity, mActiveUser, mSelectedShow, episode.getIdCapitulo());
     }
 
     public static void lanzarPelicula(final Context activity, final Usuario mActiveUser, Ficha mSelectedShow){
-        lanzarEnlaceDentro(activity, mActiveUser, mSelectedShow, null);
+        lanzarEnlace(activity, mActiveUser, mSelectedShow, null);
     }
 
     public static void lanzarEnlace(final Context activity, final Usuario mActiveUser, Ficha mSelectedShow, final String episode){

@@ -57,4 +57,5 @@
     <string name="follow_viewed">Vista</string>
     <string name="trailer">Trailer</string>
     <string name="error_mxplayer_missing">No se encuentra \"MX Player\". Por favor instalelo.</string>
+    <string name="marcar_capitulo">Des/Marcar capitulo com visto</string>
 </resources>

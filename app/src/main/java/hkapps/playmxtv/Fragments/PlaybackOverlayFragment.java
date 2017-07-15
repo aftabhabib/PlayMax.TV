@@ -56,6 +56,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
 
 import hkapps.playmxtv.Activities.MainActivity;
 import hkapps.playmxtv.Adapters.CardPresenter;
@@ -78,6 +79,10 @@ public class PlaybackOverlayFragment extends android.support.v17.leanback.app.Pl
     private static final int DEFAULT_UPDATE_PERIOD = 1000;
     private static final int UPDATE_PERIOD = 16;
     private static final int SIMULATED_BUFFERED_TIME = 10000;
+
+    private int mFfwRwdSpeed;
+    private Timer mClickTrackingTimer;
+    private int mClickCount;
 
     private ArrayObjectAdapter mRowsAdapter;
     private ArrayObjectAdapter mPrimaryActionsAdapter;

@@ -19,20 +19,32 @@ import hkapps.playmxtv.R;
 
 public class EnlacesAdapter extends BaseAdapter {
 
+    Boolean markable = false;
     List<Enlace> links;
 
     public EnlacesAdapter(List<Enlace> links){
         this.links = links;
     }
+    public EnlacesAdapter(List<Enlace> links, Boolean markable){
+        this(links);
+        this.markable = markable;
+    }
 
     @Override
     public int getCount() {
-        return links.size();
+        if(markable)
+            return links.size() + 1;
+        else
+            return links.size();
     }
 
     @Override
     public Enlace getItem(int position) {
-        return links.get(position);
+        if(markable){
+            if(position == 0) return null;
+            else return links.get(position-1);
+        }else
+            return links.get(position);
     }
 
     @Override
@@ -52,8 +64,13 @@ public class EnlacesAdapter extends BaseAdapter {
         } else
             holder = (ViewHolder) convertView.getTag();
 
-        holder.idioma.setText(getItem(position).getIdioma()+"");
-        holder.calidad.setText(getItem(position).getCalidad()+"");
+        if(getItem(position) == null){
+            holder.idioma.setText(parent.getContext().getResources().getString(R.string.marcar_capitulo));
+        }else{
+            holder.idioma.setText(getItem(position).getIdioma()+"");
+            holder.calidad.setText(getItem(position).getCalidad()+"");
+        }
+
 
         return convertView;
     }

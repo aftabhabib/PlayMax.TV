@@ -48,6 +48,8 @@ public class Enlace implements Serializable{
         void onEnlaceSelected(Enlace selected);
     }
 
+
+
     String host;
     String lang,sub;
     String[] urls;
