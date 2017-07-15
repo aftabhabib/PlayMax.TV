@@ -64,8 +64,6 @@ public class LoginActivity extends Activity implements LoginServer.Listener {
         username = prefs.getString(USERNAME_TAG,null);
         password = prefs.getString(PASSWORD_TAG,null);
 
-        username = "hkfuertes";
-        password = "Gorila6030";
 
         if(username == null || password == null){
             status.setText(R.string.login_settings_not_found_starting);
