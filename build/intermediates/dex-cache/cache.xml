@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\4c24a4784811b5070c0ddbdb5429f28dc9c5daf1\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="379a48c2da13ffb7ec7134f2c715663834357670">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_65d305f5a968d5dd6a7d25c8f543e65a95587660.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\eea361e4e2a948b7e45f7996b5eb789784138499\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="3ecb9d2aad9a03dd8d0914b715cc1fc11d942c6c">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_b8022169f1ade1e851a92fe37e7c0e6fc1f11030.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.gradle\caches\modules-2\files-2.1\org.nanohttpd\nanohttpd\2.2.0\73a02117620b6cc7683a1ed6ae24c2f36e2a715\nanohttpd-2.2.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="073a02117620b6cc7683a1ed6ae24c2f36e2a715">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\nanohttpd-2.2.0_9c6372ea0d346a25bef402dfe7be64a6e3d91b4d.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\25.3.1\support-annotations-25.3.1.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="bf8841d29fa39e077730e7a91222c2ce269fa7c9">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\support-annotations-25.3.1_b5d0d007caaa546239e78ca4d7e9aefe0df6b891.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\7e0d3ee11e54330e1152ec7bfecb986d9a2882d7\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="63d36c312414cfb92564017b0764fc64c8321fae">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_0a2515e4f015187592a1d8c786c919b18243bc15.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\cf25efc9fee40f4aa56888169b808f089cdc20d1\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="150252b33b00274cc868578ade018fda0d43a3eb">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_dfbbfa5547e924849d7c9753a648862f51b22716.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\5c788599b9658a18cef3bf17def455e905e94809\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="20fa9888472a66e49eca47436f5706225947ee42">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_eb519bed6d9b9ace06dc07727cad90e204099c3c.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\a96bd3bec9fb869186108c4242f825b3392fc7cc\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="fec1885e552daefad93872f1840102afc25018ad">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_768000639bf7226ebaf9da9d062f31ec11db3110.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\87d7c9f3e52ac715ceb518d8bb1b4579084e492f\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="052f5f840f21174a3ecf6544130194e2652cbb73">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_499685033c21055a94fd8c609187aade274e8f14.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\2b185ebd681322132b9b7c5c32d8d16a4359130c\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="44ee06abb66da30f5855e6bf54574e64cdcd982a">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_98e708f70f3c9d44e15800dae2e62b730ce5cd10.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\800f49f49e19ea1728f5c65ddf2aa59dad9c26d5\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="47635644d0d5c103c1dd8360549eb9ba3225c7d3">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_6bc82e3ef4b39fc26dbd3afa908b92311790ff18.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.gradle\caches\modules-2\files-2.1\org.jsoup\jsoup\1.10.2\33ee82e324f4b1e40167f3dc5e01234a1c5cab61\jsoup-1.10.2.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="33ee82e324f4b1e40167f3dc5e01234a1c5cab61">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\jsoup-1.10.2_cc40495b55bdfb78df05078dea36b5ac56c3a997.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\AppData\Local\Android\sdk\extras\m2repository\com\android\support\constraint\constraint-layout-solver\1.0.2\constraint-layout-solver-1.0.2.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="b9cd8fc6bd15cb915735d34535db30ece0c44603">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\constraint-layout-solver-1.0.2_1de42b3a9e6b71c86c9abb4ff5e5bc94c865182d.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.gradle\caches\modules-2\files-2.1\com.github.bumptech.glide\glide\3.4.0\82552712133e094bbb565289fb2bc2d2952ba551\glide-3.4.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="82552712133e094bbb565289fb2bc2d2952ba551">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\glide-3.4.0_454ec63ebd8862b40a6c3fd05d51385f5f2e0c99.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\54aa810f0293861466ab832f56e22858533a4f17\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="6ef31f1555bb4cc513ec8d52711365a8b89f3600">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_52acfc2ac8a28b560645f2a91f08735805867b44.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\ed8b4ee7dbca88aa51fa50f88b7b07187b99d44a\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="026b8b454ba5a0265954502f91d26d58da1bd47d">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_65024df769c927c4f64493e910e556ad0a489afe.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\369dee4967f5599833560aaa4b96655c37e3206d\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="fa78aef636a3244ae8973ca9bb0f7b836e216c3b">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_751047b06331b6518a7737d24e4d1cbafeb9bb70.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\aaf465a8432211b29844813d8fe89b6733a311f8\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="2cd4b982617e544728de0782d718a58ce1b06e3f">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_57171faec13e567ad2569811c1aec1c88e20666e.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\24b5b6b1e618b721b1852993ef89afaeebacef33\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="45f697922e6f072daa12f8a2995dc77ab03c11da">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_a824583d6f427b1f8889ecfb06581b98d159a12d.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\022d6380083bbfc54a9afd21b06f3d9f025aad49\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="95519720620b553f63afc789beba9ad582807f7c">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_c174d589d7f22a81ee3bbf34ff258b9948919ae4.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\d218799d5443d3f8f5f373d6b451b58bc7551050\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="4a26a1154d053ab11aaf4c3967c42a4d66390991">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_a938136d1ad450f66fd788b136ba449bd8060895.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\85a443be3765a46fa1fff0d5eb6a27d553908abe\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="da27a32db6af8954ee8061537c7d476fcb1df46f">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_95165c93657c9f22c719465082f030dec3f2ed7b.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\231ac6ffd80529201846371903eab8fae06d3d3f\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="74a38cad152f51cf3ca977ef4612e98e1731942b">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_f371c46c08e81487732d0484c506f19e08fe7b27.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\6f34a43b1cb0d76dea42d6804bfec1f91c88fcc2\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_b039bd5b6e85958fdca4e4c3a69cd7ad5f1e5c8d.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\hkfuertes\.android\build-cache\d982acae9f2552ff95570f796a01e1ad74c1fd3b\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="efb8cb62d47d157c29d1521daac7eefd4cb881ee">
+        <dex dex="C:\Users\hkfuertes\StudioProjects\PlayMax.TV\app\build\intermediates\pre-dexed\debug\classes_de98226863cdc5069987fe5487996322db960139.jar" />
+    </item>
+
+</items>
